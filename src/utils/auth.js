@@ -13,3 +13,10 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function setAdminName(adminName){
+  return Cookies.set('admin_name',adminName)
+}
+export  function  getAdminName(){
+  return Cookies.get('admin_name')
+}

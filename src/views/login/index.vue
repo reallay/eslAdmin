@@ -6,32 +6,32 @@
         <h3 class="title">Login Form</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="admin_name">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
+          ref="admin_name"
+          v-model="loginForm.admin_name"
           placeholder="Username"
-          name="username"
+          name="admin_name"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="admin_pwd">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
+          ref="admin_pwd"
+          v-model="loginForm.admin_pwd"
           :type="passwordType"
           placeholder="Password"
-          name="password"
+          name="admin_pwd"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
@@ -74,12 +74,12 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        admin_name: 'admin',
+        admin_pwd: 'esl2020!'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        admin_name: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        admin_pwd: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password',
@@ -110,9 +110,11 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
+
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          }).catch((e) => {
+            console.log(e)
             this.loading = false
           })
         } else {
