@@ -122,7 +122,23 @@ export const constantRoutes = [
 
     ]
   },
+  {
+    path: '/ads',
+    component: Layout,
+    redirect: '/ads/list',
+    name: 'Ads',
+    meta: { title: 'Ads', icon: 'el-icon-s-help' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'list',
+        name: 'adsList',
+        component: () => import('@/views/ads/list/index'),
+        meta: { title: 'List', icon: 'table' }
+      }
 
+    ]
+  },
   // {
   //   path: '/form',
   //   component: Layout,

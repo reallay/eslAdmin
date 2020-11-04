@@ -16,3 +16,11 @@ export function editUserInfo(data) {
   })
 }
 
+export function deleteUser(data){
+  return request({
+    url:'/admin/deleteUser',
+    method:'post',
+    data
+  })
+}
+

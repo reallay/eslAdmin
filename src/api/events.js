@@ -7,3 +7,11 @@ export function eventsList(params) {
     params
   })
 }
+
+export function approveEvent(data){
+  return request({
+    url: 'admin/approveEvent',
+    method: 'post',
+    data
+  })
+}

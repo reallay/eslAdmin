@@ -7,3 +7,11 @@ export function dealsList(params) {
     params
   })
 }
+
+export function approveDeal(data) {
+  return request({
+    url: '/admin/approveDeal',
+    method: 'post',
+    data
+  })
+}

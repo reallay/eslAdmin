@@ -16,10 +16,10 @@
         <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
       </el-select>
       <el-select v-model="listQuery.is_seeking" placeholder="Is Seeking" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in seekingOptions" :key="index" :label="item" :value="item"></el-option>
+        <el-option v-for="(item,index) in seekingOptions" :key="index" :label="item.label" :value="item.label"></el-option>
       </el-select>
       <el-select v-model="listQuery.sex" placeholder="Gender" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in sexOptions" :key="index" :label="item" :value="item"></el-option>
+        <el-option v-for="(item,index) in sexOptions" :key="index" :label="item.label" :value="item.value"></el-option>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         Search
@@ -60,10 +60,6 @@
             <el-form-item label="City">
               <span>{{ props.row.city }}</span>
             </el-form-item>
-<!--            <el-form-item label="Headimgurl">-->
-<!--              <img :src="props.row.headimgurl" alt="headimgurl">-->
-<!--&lt;!&ndash;              <span>{{ props.row.headimgurl }}</span>&ndash;&gt;-->
-<!--            </el-form-item>-->
             <el-form-item label="Language">
               <span>{{ props.row.language }}</span>
             </el-form-item>
@@ -244,17 +240,23 @@
       </el-table-column>
       <el-table-column label="Is Seeking" width="110" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.is_seeking }}</span>
+          <span v-if="scope.row.is_seeking===0">No</span>
+          <span v-if="scope.row.is_seeking===1">Yes</span>
         </template>
       </el-table-column>
       <el-table-column label="Gender" width="110" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.sex }}</span>
+          <span v-if="scope.row.sex === 1">Male</span>
+          <span v-if="scope.row.sex === 2">Female</span>
+          <span v-if="scope.row.sex === 0">Unc</span>
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="Identity" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.identity | statusFilter">{{ scope.row.identity }}</el-tag>
+          <el-tag v-if="scope.row.identity ===0" :type="scope.row.identity | statusFilter">Other</el-tag>
+          <el-tag v-if="scope.row.identity ===1" :type="scope.row.identity | statusFilter">Educator</el-tag>
+          <el-tag v-if="scope.row.identity ===2" :type="scope.row.identity | statusFilter">Business</el-tag>
+          <el-tag v-if="scope.row.identity ===3" :type="scope.row.identity | statusFilter">Vendor</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
@@ -268,10 +270,10 @@
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            Publish-->
 <!--          </el-button>-->
-<!--          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-<!--            Draft-->
-<!--          </el-button>-->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row,$index)">
+            Recover
+          </el-button>
+          <el-button v-if="row.is_delete!=1" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
         </template>
@@ -281,15 +283,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-<!--        <el-form-item label="Type" prop="type">-->
-<!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Date" prop="timestamp">-->
-<!--          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />-->
-<!--        </el-form-item>-->
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
         <el-form-item label="username" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
@@ -301,7 +295,7 @@
         </el-form-item>
         <el-form-item label="sex" prop="sex">
           <el-select v-model="temp.sex" class="filter-item" placeholder="Please select gender">
-            <el-option v-for="(item,index) in sexOptions" :key="index" :label="item" :value="item" />
+            <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="phone" prop="phone">
@@ -363,7 +357,7 @@
 </template>
 
 <script>
-import { userList,editUserInfo } from '@/api/member'
+import { userList,editUserInfo,deleteUser } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -418,14 +412,15 @@ export default {
         sex:undefined
       },
       percentOptions:[0,10, 20, 30,40,50,60,70,80,90,100],
-      seekingOptions:[0,1],
-      sexOptions:[0,1,2],
+      seekingOptions:[{label:'no',value:0},{label:'Yes',value:1}],
+      sexOptions:[{label:'unco',value:0},{label:'Male',value:1},{label:'Female',value:2}],
       importanceOptions: [10, 20, 30,40,50,60,70,80,90,100],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
+        user_id:undefined,
         username:undefined,
         nickname:undefined,
         truename:undefined,
@@ -483,9 +478,9 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      console.log(this.listQuery)
+      // console.log(this.listQuery)
       userList(this.listQuery).then(response => {
-        console.log(response)
+        // console.log(response)
         this.list = response.message.data
         this.total = response.message.total
 
@@ -559,7 +554,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-
+      this.temp.user_id = row.id
       // console.log(this.temp.birthday)
       if(this.temp.birthday == '0000-00-00'){
         this.temp.birthday = new Date()
@@ -585,6 +580,7 @@ export default {
           tempObj.sex = this.temp.sex
           tempObj.phone = this.temp.phone
           tempObj.email = this.temp.email
+          tempObj.user_id = this.temp.user_id
 
           // console.log(tempData.birthday.getFullYear())
           let year = tempData.birthday.getFullYear()
@@ -594,28 +590,81 @@ export default {
           tempObj.birthday = birthdayStr
           tempData.birthday = birthdayStr // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           // console.log(tempData)
-          editUserInfo(tempObj).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+          editUserInfo(tempObj).then((res) => {
+            console.log(res)
+            if (res.code == 200){
+              this.dialogFormVisible = false
+              this.$notify({
+                title: 'Success',
+                message: 'Update Successfully',
+                type: 'success',
+                duration: 2000
+              })
+              this.getList()
+            }
+            // const index = this.list.findIndex(v => v.id === this.temp.id)
+            // this.list.splice(index, 1, this.temp)
+
           })
         }
       })
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+
+      // this.list.splice(index, 1)
+      deleteUser({
+        user_id:row.id,
+        is_delete:1
+      }).then(res=>{
+        console.log(res)
+        if (res.code === 200){
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList();
+        }else{
+          this.$notify({
+            title: res.msg,
+            message: res.msg,
+            type: 'wrong',
+            duration: 2000
+          })
+        }
+      }).catch(error=>{
+        console.log(error)
       })
-      this.list.splice(index, 1)
+    },
+    handleRecover(row, index) {
+
+      // this.list.splice(index, 1)
+      deleteUser({
+        user_id:row.id,
+        is_delete:0
+      }).then(res=>{
+        console.log(res)
+        if (res.code === 200){
+          this.$notify({
+            title: 'Success',
+            message: 'Recover Successfully',
+            type: 'success',
+            duration: 2000
+          })
+          this.getList();
+
+        }else{
+          this.$notify({
+            title: res.msg,
+            message: res.msg,
+            type: 'wrong',
+            duration: 2000
+          })
+        }
+      }).catch(error=>{
+        console.log(error)
+      })
     },
     handleFetchDetail(detail){
       this.dialogUserDetailVisible=true
