@@ -42,7 +42,12 @@
       </el-table-column>
       <el-table-column label="Category" width="110px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.cate }}</span>
+          <span class="link-type" v-if="row.cate==1">Index</span>
+          <span class="link-type" v-if="row.cate==2">Jobs</span>
+          <span class="link-type" v-if="row.cate==3">Educator</span>
+          <span class="link-type" v-if="row.cate==4">Business</span>
+          <span class="link-type" v-if="row.cate==5">Vendor</span>
+          <span class="link-type" v-if="row.cate==6">Deal</span>
         </template>
       </el-table-column>
       <el-table-column label="Link" width="110px" align="center">
@@ -52,7 +57,9 @@
       </el-table-column>
       <el-table-column label="Position" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.position }}</span>
+          <span v-if="row.position == 1">Top</span>
+          <span v-if="row.position == 2">Mid</span>
+          <span v-if="row.position == 3">Bottom</span>
         </template>
       </el-table-column>
       <el-table-column label="Sort" width="110px" align="center">
@@ -89,10 +96,10 @@
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            Publish-->
 <!--          </el-button>-->
-<!--          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-<!--            Draft-->
-<!--          </el-button>-->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row)">
+            Recover
+          </el-button>
+          <el-button v-if="row.is_delete===0" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
         </template>
@@ -130,11 +137,14 @@
             name="file[]"
             action="http://api.test.esl-passport.cn/api/admin/upload"
             multiple
+            list-type="picture"
+            :limit="1"
             :on-success="uploadFileSuccess"
+            :file-list="fileList"
           >
             <i class="el-icon-upload"></i>
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+<!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
           </el-upload>
         </el-form-item>
 
@@ -209,7 +219,7 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Edu',value: 3},{label:'Bui',value: 4},{label:'Ven',value: 5}],
+      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Educator',value: 3},{label:'Business',value: 4},{label:'Vendor',value: 5},{label:'Deals',value:6}],
       positionList:[{label:'Top',value:1},{label:'Mid',value: 2},{label:'Bottom',value: 3}],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -239,7 +249,8 @@ export default {
       },
       downloadLoading: false,
       // uploadHeaders:undefined,
-      fileUrl:undefined
+      fileUrl:undefined,
+      fileList:undefined
     }
   },
   computed:{
@@ -260,7 +271,8 @@ export default {
       this.listLoading = true
       adList(this.listQuery).then(response => {
         console.log(response)
-        this.list = response.message.data
+        // this.list = response.message.data
+        this.list  = response.message.data.filter(item=>item.is_delete===0)
         this.total = response.message.total
 
         // Just to simulate the time of the request
@@ -308,6 +320,7 @@ export default {
     },
     handleCreate() {
       this.resetTemp()
+      this.fileList=undefined
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -330,14 +343,17 @@ export default {
               type: 'success',
               duration: 2000
             })
-            this.getList()
+            window.location.reload()
           })
         }
       })
     },
     handleUpdate(row) {
+      console.log(row)
       this.temp = Object.assign({}, row) // copy obj
       this.temp.ad_id = row.id
+      this.temp.position = Number(row.position)
+      this.fileList =  [{name: '', url: row.url}]
       // this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -353,15 +369,18 @@ export default {
           // tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           add(tempData).then((res) => {
             console.log(res)
-            // const index = this.list.findIndex(v => v.id === this.temp.id)
-            // this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+            if(res.code == 200){
+              this.dialogFormVisible = false
+              this.$notify({
+                title: 'Success',
+                message: 'Update Successfully',
+                type: 'success',
+                duration: 2000
+              })
+              this.getList()
+              this.fileUrl = ''
+            }
+
           })
         }
       })
@@ -373,7 +392,21 @@ export default {
         type: 'success',
         duration: 2000
       })
-      this.list.splice(index, 1)
+      // this.list.splice(index, 1)
+      add({is_delete:1,ad_id:row.id}).then(res=>{
+        console.log(res)
+        this.getList()
+      }).catch(error=>{
+        console.log(error)
+      })
+    },
+    handleRecover(row){
+      add({is_delete:0,ad_id:row.id}).then(res=>{
+        console.log(res)
+        this.getList()
+      }).catch(error=>{
+        console.log(error)
+      })
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
@@ -409,12 +442,13 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     uploadFileSuccess(response,file,fileList){
-      console.log(response)
-      console.log(file)
-      console.log(fileList)
+      // console.log(response)
+      // console.log(file)
+      // console.log(fileList)
       if (response.code == 200){
         this.fileUrl = response.data[0].file_url
         let file_name = response.data[0].file_name
+
       }else{
         console.log(response.msg)
       }

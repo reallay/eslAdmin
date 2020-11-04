@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: 'ESL PASSPORT ADMIN PANEL',
 
   /**
    * @type {boolean} true | false
