@@ -6,15 +6,15 @@
       <el-select v-model="listQuery.is_educator" placeholder="Is Educator" clearable style="width: 110px;" class="filter-item">
         <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
       </el-select>
-      <el-select v-model="listQuery.is_business" placeholder="Is Business" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
-      </el-select>
-      <el-select v-model="listQuery.is_vendor" placeholder="Is Vendor" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
-      </el-select>
-      <el-select v-model="listQuery.is_other" placeholder="Is Other" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
-      </el-select>
+<!--      <el-select v-model="listQuery.is_business" placeholder="Is Business" clearable style="width: 110px;" class="filter-item">-->
+<!--        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>-->
+<!--      </el-select>-->
+<!--      <el-select v-model="listQuery.is_vendor" placeholder="Is Vendor" clearable style="width: 110px;" class="filter-item">-->
+<!--        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>-->
+<!--      </el-select>-->
+<!--      <el-select v-model="listQuery.is_other" placeholder="Is Other" clearable style="width: 110px;" class="filter-item">-->
+<!--        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>-->
+<!--      </el-select>-->
       <el-select v-model="listQuery.is_seeking" placeholder="Is Seeking" clearable style="width: 110px;" class="filter-item">
         <el-option v-for="(item,index) in seekingOptions" :key="index" :label="item.label" :value="item.label"></el-option>
       </el-select>
@@ -218,26 +218,26 @@
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Is Educator"  align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.is_educator }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Is Business"  align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.is_business }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Is Vendor" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.is_vendor }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Is Other" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.is_other }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="Is Educator"  align="center">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.is_educator }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Is Business"  align="center">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.is_business }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Is Vendor" width="110" align="center">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.is_vendor }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Is Other" width="110" align="center">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.is_other }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="Is Seeking" width="110" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.is_seeking===0">No</span>
@@ -259,7 +259,21 @@
           <el-tag v-if="scope.row.identity ===3" :type="scope.row.identity | statusFilter">Vendor</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="Deals" align="center" width="100" class-name="small-padding fixed-width">
+        <template slot-scope="{row,$index}">
+          <el-button type="primary" size="mini" @click="handleAddDeals(row)">
+            Add
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="Events" align="center" width="100" class-name="small-padding fixed-width">
+        <template slot-scope="{row,$index}">
+          <el-button type="primary" size="mini" @click="handleAddEvents(row)">
+            Add
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="Actions" align="center" width="280" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
@@ -276,11 +290,173 @@
           <el-button v-if="row.is_delete!=1" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
+          <el-button size="mini"  @click="handleMemberLevel(row,$index)">Upgrade</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormDealsVisible">
+      <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="Type">
+          <el-select v-model="dealsTempData.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsType" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="IS All">
+          <el-select v-model="dealsTempData.is_all" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsTwo" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Due Contract">
+          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Pay Money">
+          <el-input type="number" v-model="dealsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="For Unregister">
+          <el-select v-model="dealsTempData.is_unregister" class="filter-item" placeholder="Please select">
+            <el-option  label="YES" :value="1" />
+            <el-option  label="NO" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Popular City">
+          <el-select v-model="dealsTempData.city" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Location">
+          <el-input  v-model="dealsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="Desc">
+          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Url">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            action="http://api.test.esl-passport.cn/api/admin/upload"
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadFileSuccess"
+            :file-list="fileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormDealsVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="createDeals">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
+
+<!--    events-->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormEventsVisible">
+      <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
+
+        <el-form-item label="Name">
+          <el-input  v-model="eventsTempData.name" class="filter-item"  placeholder="Please input"></el-input>
+        </el-form-item>
+        <el-form-item label="Desc">
+          <el-input v-model="eventsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="IS All">
+          <el-select v-model="eventsTempData.is_all" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in eventsOne" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Type Desc">
+          <el-input v-model="eventsTempData.type_desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Pay Money">
+          <el-input type="number" v-model="eventsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="For Unregister">
+          <el-select v-model="eventsTempData.is_unregister" class="filter-item" placeholder="Please select">
+            <el-option  label="YES" :value="1" />
+            <el-option  label="NO" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Popular City">
+          <el-select v-model="eventsTempData.city" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Location">
+          <el-input  v-model="eventsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Date" >
+          <!--          <el-input v-model="temp.birthday" />-->
+          <el-date-picker
+            v-model="eventsTempData.date"
+            type="date"
+            placeholder="Please picker a date"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="Start Time & End Time">
+          <el-time-select
+            placeholder="Start Time"
+            v-model="eventsTempData.start_time"
+            :picker-options="{
+      start: '00:00',
+      step: '00:01',
+      end: '24:00'
+    }">
+          </el-time-select>
+          <el-time-select
+            placeholder="End Time"
+            v-model="eventsTempData.end_time"
+            :picker-options="{
+       start: '00:00',
+      step: '00:01',
+      end: '24:00',
+      minTime: eventsTempData.start_time
+    }">
+          </el-time-select>
+        </el-form-item>
+
+        <el-form-item label="Url">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            action="http://api.test.esl-passport.cn/api/admin/upload"
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadEventsFileSuccess"
+            :file-list="eventsFileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormEventsVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="createEvents">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
@@ -336,6 +512,30 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormUpgrade">
+<!--      :rules="rules"-->
+      <el-form ref="dataForm"  :model="tempUpgrade" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="Identity" prop="identity">
+          <el-select @change="changeIdentity" v-model="tempUpgrade.identity" class="filter-item" placeholder="Choose Identity">
+            <el-option v-for="item in identityOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Level" prop="levelId">
+          <el-select v-model="tempUpgrade.levelId" class="filter-item" placeholder="Choose Level">
+            <el-option v-for="item in levelOptions" :key="item.id" :label="item.level_en" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormUpgrade = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="upgradeLevel()">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
+
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
@@ -357,10 +557,13 @@
 </template>
 
 <script>
-import { userList,editUserInfo,deleteUser } from '@/api/member'
+
+import { userList, editUserInfo, deleteUser, vipList, changeVipLevel, userObjectList } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { addDeals } from '@/api/deals' // secondary package based on el-pagination
+import {addEvent} from '@/api/events'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -394,6 +597,50 @@ export default {
   },
   data() {
     return {
+      dealsType:[{label:'Deal',value:1},{label:'Discount',value:2}],
+      dealsTwo:[{label:'All Locations',value:1},{label:'Limited',value:0}],
+      dealsThree:[{label:'1 year',value:1},{label:'2 year',value:2}],
+      dealsFour:[{label:'Shanghai',value:1},{label:'Other',value:0}],
+      eventsOne:[{label:'Social',value:1},{label:'Professional',value: 2}],
+      userListData:[],
+      popuCityList:[],
+      dialogFormDealsVisible:false,
+
+      dealsTempData:{
+        user_id:1,
+        is_unregister:undefined,
+        type:undefined,
+        is_all:undefined,
+        file:undefined,
+        due_contract:undefined,
+        pay_money:undefined,
+        desc:undefined,
+        deal_id:undefined,
+        city:undefined,
+        location:undefined,
+        identity:undefined
+      },
+      fileUrl:undefined,
+      fileList:undefined,
+      eventsFileUrl:undefined,
+      eventsFileList:undefined,
+      dialogFormEventsVisible:false,
+      eventsTempData:{
+        user_id:1,
+        name:undefined,
+        desc:undefined,
+        is_all:undefined,
+        type_desc:undefined,
+        pay_money:undefined,
+        date:undefined,
+        start_time:undefined,
+        end_time:undefined,
+        file:undefined,
+        location:undefined,
+        city:undefined,
+        is_unregister: 0
+      },
+
       tableKey: 0,
       list: null,
       total: 0,
@@ -414,6 +661,10 @@ export default {
       percentOptions:[0,10, 20, 30,40,50,60,70,80,90,100],
       seekingOptions:[{label:'no',value:0},{label:'Yes',value:1}],
       sexOptions:[{label:'unco',value:0},{label:'Male',value:1},{label:'Female',value:2}],
+      identityOptions:[{label:'Educator',value:1},{label:'Business',value:2},{label:'Vendor',value:3}],
+      levelOptions:[],
+      vipList:[],
+
       importanceOptions: [10, 20, 30,40,50,60,70,80,90,100],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -429,11 +680,17 @@ export default {
         email:undefined,
         birthday:''
       },
+      tempUpgrade:{
+        identity:undefined,
+        levelId:undefined
+      },
       dialogFormVisible: false,
+      dialogFormUpgrade:false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
-        create: 'Create'
+        create: 'Create',
+        upgrade:'Upgrade',
       },
       dialogPvVisible: false,
       pvData: [],
@@ -472,10 +729,117 @@ export default {
       },
     }
   },
+  computed:{
+    token() {
+      return this.$store.state.user.token
+    },
+    uploadHeaders(){
+      return {
+        token:this.$store.state.user.token
+      }
+    }
+  },
   created() {
     this.getList()
+    this.getVipList()
+    this.getUserObjList()
   },
   methods: {
+    getUserObjList(){
+      userObjectList({pid:71}).then(res=>{
+        console.log(res)
+        this.popuCityList = res.message
+      })
+    },
+    handleAddDeals(row){
+      this.dialogFormDealsVisible=true
+      this.dealsTempData.user_id = row.id;
+    },
+    handleAddEvents(row){
+      this.dialogFormEventsVisible=true
+
+      this.dealsTempData.user_id = row.id;
+    },
+    createEvents(){
+      console.log(this.eventsTempData)
+      // console.log(tempData.birthday.getFullYear())
+      let year = this.eventsTempData.date.getFullYear()
+      let  month = this.eventsTempData.date.getMonth()+1
+      let day = this.eventsTempData.date.getDate()
+
+      this.eventsTempData.date =  year+'-'+month+'-'+day
+
+      if(this.eventsTempData.is_unregister==1){
+        this.eventsTempData.user_id = 1
+      }
+      addEvent(this.eventsTempData).then(response=>{
+        console.log(response)
+        if(response.code == 200){
+          this.$message({
+            message: '操作Success',
+            type: 'success'
+          })
+          this.dialogFormEventsVisible=false
+          this.eventsTempData =  {
+            user_id:1,
+              name:undefined,
+              desc:undefined,
+              is_all:undefined,
+              type_desc:undefined,
+              pay_money:undefined,
+              date:undefined,
+              start_time:undefined,
+              end_time:undefined,
+              file:undefined,
+              location:undefined,
+              city:undefined,
+              is_unregister: 0
+          }
+        }
+      })
+    },
+    createDeals(){
+      console.log(this.dealsTempData)
+      if(this.dealsTempData.is_unregister==1){
+        this.dealsTempData.user_id = 1
+      }
+      addDeals(this.dealsTempData).then(response=>{
+        console.log(response)
+        if(response.code == 200){
+          this.$message({
+            message: '操作Success',
+            type: 'success'
+          })
+          this.dialogFormDealsVisible=false
+        }
+      })
+    },
+    uploadFileSuccess(response,file,fileList){
+      console.log(response)
+      // console.log(file)
+      // console.log(fileList)
+      if (response.code == 200){
+        this.fileUrl = response.data[0].file_url
+        this.dealsTempData.file = response.data[0].file_url
+        let file_name = response.data[0].file_name
+
+      }else{
+        console.log(response.msg)
+      }
+    },
+    uploadEventsFileSuccess(response,file,eventsFileList){
+      console.log(response)
+      // console.log(file)
+      // console.log(fileList)
+      if (response.code == 200){
+        this.eventsFileUrl = response.data[0].file_url
+        this.eventsTempData.file = response.data[0].file_url
+        let file_name = response.data[0].file_name
+
+      }else{
+        console.log(response.msg)
+      }
+    },
     getList() {
       this.listLoading = true
       // console.log(this.listQuery)
@@ -488,6 +852,30 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+    },
+    changeIdentity(e){
+      // console.log(e)
+      // this.levelOptions = []
+      if(e==1){
+        this.tempUpgrade.levelId=undefined
+        this.levelOptions = this.vipList.filter(item=>item.identity==1)
+      }
+      if(e==2){
+        this.tempUpgrade.levelId=undefined
+        this.levelOptions = this.vipList.filter(item=>item.identity==2)
+      }
+      if(e==3){
+        this.tempUpgrade.levelId=undefined
+        this.levelOptions = this.vipList.filter(item=>item.identity==3)
+      }
+      console.log(this.levelOptions)
+
+    },
+    getVipList(){
+      vipList().then(response=>{
+        console.log(response)
+        this.vipList = response.message;
       })
     },
     handleFilter() {
@@ -635,6 +1023,56 @@ export default {
         }
       }).catch(error=>{
         console.log(error)
+      })
+    },
+    handleMemberLevel(row,index){
+      // this.tempUpgrade = Object.assign({}, row) // copy obj
+      this.tempUpgrade.user_id = row.id
+      console.log(row)
+      this.dialogStatus = "Upgrade"
+      this.dialogFormUpgrade = true
+      this.tempUpgrade.levelId = undefined
+      this.tempUpgrade.identity = undefined
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    upgradeLevel(){
+      var that = this;
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          console.log(this.tempUpgrade)
+          const tempData = Object.assign({}, this.tempUpgrade)
+          // const tempObj = {}
+          // tempObj.username = this.temp.username
+          // tempObj.nickname = this.temp.nickname
+          let data = {
+            user_id:tempData.user_id,
+            identity:tempData.identity,
+            level_id:tempData.levelId
+          }
+          changeVipLevel(data).then(response=>{
+            console.log(response)
+            if(response.code == 200){
+
+              setTimeout(function(){
+                that.$notify({
+                  title: 'Success',
+                  message: 'Upgrade Successfully',
+                  type: 'success',
+                  duration: 2000
+                })
+                that.dialogFormUpgrade = false
+              },2000)
+
+            }
+
+          })
+
+
+          // console.log(tempData)
+
+        }
       })
     },
     handleRecover(row, index) {

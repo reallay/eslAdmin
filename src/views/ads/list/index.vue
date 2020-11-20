@@ -219,7 +219,7 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Educator',value: 3},{label:'Business',value: 4},{label:'Vendor',value: 5},{label:'Deals',value:6}],
+      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Educator',value: 3},{label:'Business',value: 4},{label:'Vendor',value: 5},{label:'Deals',value:6},{label:'Discount',value: 7},{label:'Contact',value: 8}],
       positionList:[{label:'Top',value:1},{label:'Mid',value: 2},{label:'Bottom',value: 3}],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],

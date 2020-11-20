@@ -15,3 +15,11 @@ export function approveEvent(data){
     data
   })
 }
+///admin/addEvent
+export function addEvent(data){
+  return request({
+    url: 'admin/addEvent',
+    method: 'post',
+    data
+  })
+}

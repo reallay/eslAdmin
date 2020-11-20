@@ -24,3 +24,28 @@ export function deleteUser(data){
   })
 }
 
+export function  vipList(params){
+  return request({
+    url:'/admin/vipList',
+    method:'get',
+    params
+  })
+}
+
+//admin/changeVipLevel
+export function changeVipLevel(data){
+  return request({
+    url:'/admin/changeVipLevel',
+    method:'post',
+    data
+  })
+}
+//admin/userObjectList
+
+export function userObjectList(params){
+  return request({
+    url:'/admin/userObjectList',
+    method:'get',
+    params
+  })
+}

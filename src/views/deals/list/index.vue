@@ -5,6 +5,9 @@
       <el-select v-model="listQuery.status" placeholder="Status" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in statusOptions" :key="item.label" :label="item.label" :value="item.value" />
       </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleAddDeals">
+        Add
+      </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         Search
       </el-button>
@@ -54,7 +57,7 @@
       </el-table-column>
       <el-table-column label="First&Last Name" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.user_info.first_name}}{{row.user_info.last_name}}</span>
+          <span v-if="row.user_info">{{ row.user_info.first_name}} {{row.user_info.last_name}}</span>
         </template>
       </el-table-column>
       <el-table-column label="Reason" width="150px" align="center">
@@ -122,6 +125,66 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormDealsVisible">
+      <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="Type">
+          <el-select v-model="dealsTempData.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsType" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="IS All">
+          <el-select v-model="dealsTempData.is_all" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsTwo" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Due Contract">
+          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Pay Money">
+            <el-input type="number" v-model="dealsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="Popular City">
+          <el-select v-model="dealsTempData.city" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Location">
+          <el-input  v-model="dealsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="Desc">
+          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Url">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            action="http://api.test.esl-passport.cn/api/admin/upload"
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadFileSuccess"
+            :file-list="fileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormDealsVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="createDeals">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
+
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
@@ -135,7 +198,8 @@
 </template>
 
 <script>
-import { dealsList,approveDeal } from '@/api/deals'
+import { dealsList,approveDeal,addDeals } from '@/api/deals'
+import {userList,userObjectList} from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -157,6 +221,29 @@ export default {
   },
   data() {
     return {
+      dealsType:[{label:'Deal',value:1},{label:'Discount',value:2}],
+      dealsTwo:[{label:'All Locations',value:1},{label:'Limited',value:0}],
+      dealsThree:[{label:'1 year',value:1},{label:'2 year',value:2}],
+      dealsFour:[{label:'Shanghai',value:1},{label:'Other',value:0}],
+      userListData:[],
+      popuCityList:[],
+
+      dealsTempData:{
+        user_id:1,
+        type:undefined,
+        is_all:undefined,
+        file:undefined,
+        due_contract:undefined,
+        pay_money:undefined,
+        desc:undefined,
+        deal_id:undefined,
+        city:undefined,
+        location:undefined,
+        identity:undefined
+      },
+      fileUrl:undefined,
+      fileList:undefined,
+
       tableKey: 0,
       list: null,
       total: 0,
@@ -174,6 +261,7 @@ export default {
         status: undefined
       },
       dialogFormVisible: false,
+      dialogFormDealsVisible:false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -184,13 +272,75 @@ export default {
       rules: {
         type: [{ required: true, message: 'status is required', trigger: 'change' }],
       },
-      downloadLoading: false
+      downloadLoading: false,
+
+
+    }
+  },
+  computed:{
+    token() {
+      return this.$store.state.user.token
+    },
+    uploadHeaders(){
+      return {
+        token:this.$store.state.user.token
+      }
     }
   },
   created() {
     this.getList()
+    // this.getUserList()
+    this.getUserObjList()
   },
   methods: {
+    getUserList(){
+      userList().then(res=>{
+        console.log(res)
+        // this.userListData = res.message
+      })
+    },
+    getUserObjList(){
+      userObjectList({pid:71}).then(res=>{
+        console.log(res)
+          this.popuCityList = res.message
+      })
+    },
+    handleAddDeals(){
+      this.dialogFormDealsVisible=true
+
+    },
+    createDeals(){
+      console.log(this.dealsTempData)
+      addDeals(this.dealsTempData).then(response=>{
+        console.log(response)
+      })
+      // let data = {
+      //   user_id
+      //   type	int	Y		类型
+      //   is_all	int	Y		是否全部
+      //   file	string	N		文件URl
+      //   due_contract	int	N		合同期限
+      //   pay_money	int	N		支付金额
+      //   desc	desc	N
+      //   deal_id	int	Y
+      //   city	string	Y
+      //   location	string	Y
+      //   identity
+      // }
+
+    },
+    uploadFileSuccess(response,file,fileList){
+      console.log(response)
+      // console.log(file)
+      // console.log(fileList)
+      if (response.code == 200){
+        this.fileUrl = response.data[0].file_url
+        let file_name = response.data[0].file_name
+
+      }else{
+        console.log(response.msg)
+      }
+    },
     getList() {
       this.listLoading = true
       // console.log(this.listQuery)

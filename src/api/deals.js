@@ -15,3 +15,12 @@ export function approveDeal(data) {
     data
   })
 }
+
+//deals/addDeals
+export function addDeals(data){
+  return request({
+    url:'/admin/addDeals',
+    method:'post',
+    data
+  })
+}
