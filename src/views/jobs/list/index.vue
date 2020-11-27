@@ -17,18 +17,7 @@
             <el-form-item label="File" style="color: #20a0ff;">
               <span><a :href="props.row.file">{{ props.row.file }}</a></span>
             </el-form-item>
-            <el-form-item label="Age">
-              <span>{{ props.row.age }}</span>
-            </el-form-item>
-            <el-form-item label="Apply due date">
-              <span>{{ props.row.apply_due_date }}</span>
-            </el-form-item>
-            <el-form-item label="Business Name">
-              <span>{{ props.row.business_name }}</span>
-            </el-form-item>
-            <el-form-item label="Currency">
-              <span>{{ props.row.currency }}</span>
-            </el-form-item>
+
             <el-form-item label="Desc" style="word-break: break-all;">
               <span>{{ props.row.desc }}</span>
             </el-form-item>
@@ -41,9 +30,8 @@
             <el-form-item label="Entry Date">
               <span>{{ props.row.entry_date }}</span>
             </el-form-item>
-            <el-form-item label="Interview image">
-
-              <span>{{ props.row.interview_imgurl }}</span>
+            <el-form-item label="Interview image" v-if="props.row.interview_imgurl !=''">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.interview_imgurl"  :preview-src-list="[props.row.interview_imgurl]"></el-image>
             </el-form-item>
             <el-form-item label="Interview Name">
               <span>{{ props.row.interview_name }}</span>
@@ -81,12 +69,7 @@
             <el-form-item label="Is Teaching License">
               <span>{{ props.row.is_teaching_license }}</span>
             </el-form-item>
-            <el-form-item label="Job Location">
-              <span>{{ props.row.job_location }}</span>
-            </el-form-item>
-            <el-form-item label="Job Title">
-              <span>{{ props.row.job_title }}</span>
-            </el-form-item>
+
             <el-form-item label="Language">
               <span>{{ props.row.language }}</span>
             </el-form-item>
@@ -99,12 +82,7 @@
             <el-form-item label="Payment Period">
               <span>{{ props.row.payment_period }}</span>
             </el-form-item>
-            <el-form-item label="Reason">
-              <span>{{ props.row.reason }}</span>
-            </el-form-item>
-            <el-form-item label="Salary">
-              <span>{{ props.row.salary }}</span>
-            </el-form-item>
+
             <el-form-item label="Gender">
               <span>{{ props.row.sex }}</span>
             </el-form-item>
@@ -131,6 +109,37 @@
           <span>{{ row.job_location }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="Age" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.age }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Due Date" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.apply_due_date }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Business Name" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.business_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Currency" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.currency }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Employment Type" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="">{{ row.employment_type }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Salary" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.salary_min }} - {{row.salary_max}}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="Status" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag v-if="row.status === 0" :type="row.status | statusFilter">
@@ -226,9 +235,9 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        1: 'success',
+        0: 'info',
+        2: 'danger'
       }
       return statusMap[status]
     },
@@ -380,19 +389,31 @@ export default {
       })
     },
     handleDelete(row, index) {
-      delJobs({ job_id: row.id, is_delete: 1 }).then(res => {
-        console.log(res)
-        if (res.code == 200) {
-          this.list.splice(index, 1)
-          this.$notify({
-            title: 'Success',
-            message: 'Delete Successfully',
-            type: 'success',
-            duration: 2000
-          })
-          this.getList()
-        }
-      })
+      this.$confirm('This operation will delete the Job, do you want to continue?', 'Notice', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        delJobs({ job_id: row.id, is_delete: 1 }).then(res => {
+          console.log(res)
+          if (res.code == 200) {
+            this.list.splice(index, 1)
+            this.$message({
+              type: 'success',
+              message: 'Delete Success!'
+            });
+            this.getList()
+          }
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Undeleted'
+        });
+      });
+
     },
     handleRecover(row) {
       delJobs({ job_id: row.id, is_delete: 0 }).then(res => {

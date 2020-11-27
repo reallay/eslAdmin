@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.pay_money" placeholder="Pay Money" type="number" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.status" placeholder="Status" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in statusOptions" :key="item.label" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
+<!--      <el-input v-model="listQuery.pay_money" placeholder="Pay Money" type="number" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
+<!--      <el-select v-model="listQuery.status" placeholder="Status" clearable style="width: 90px" class="filter-item">-->
+<!--        <el-option v-for="item in statusOptions" :key="item.label" :label="item.label" :value="item.value" />-->
+<!--      </el-select>-->
+<!--      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">-->
+<!--        Search-->
+<!--      </el-button>-->
+<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
+<!--        Export-->
+<!--      </el-button>-->
     </div>
 
     <el-table
@@ -26,21 +26,6 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="Desc" style="word-break: break-all;">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
-            <el-form-item label="Type Desc" style="word-break: break-all;">
-              <span>{{ props.row.type_desc }}</span>
-            </el-form-item>
-            <el-form-item label="File" style="color: #20a0ff;">
-              <span><a :href="props.row.file">{{ props.row.file }}</a></span>
-            </el-form-item>
-            <el-form-item label="IS_ALL">
-              <span>{{ props.row.is_all }}</span>
-            </el-form-item>
-            <el-form-item label="Location">
-              <span>{{ props.row.location }}</span>
-            </el-form-item>
             <el-form-item label="Date">
               <span>{{ props.row.date }}</span>
             </el-form-item>
@@ -58,9 +43,36 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="First&Last Name" width="150px" align="center">
+      <el-table-column label="Event Name" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.user_info.first_name}}{{row.user_info.last_name}}</span>
+          <span>{{ row.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Event Desc" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.desc}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal/Discount For ESL Passport Members" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.type_desc}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Location" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.location}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Event Flyer" width="150px" align="center">
+        <template slot-scope="{row}">
+          <a :href="row.file">{{row.file}}</a>
+<!--          <span>{{ row.file}}</span>-->
+        </template>
+      </el-table-column>
+      <el-table-column label="Event Type" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.is_all == 1">Social</span>
+          <span v-if="row.is_all == 2">Professional</span>
         </template>
       </el-table-column>
       <el-table-column label="Reason" width="150px" align="center">
@@ -68,7 +80,7 @@
           <span>{{ row.reason}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pay Money" width="110px" align="center">
+      <el-table-column label="Event Price" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.pay_money }}</span>
         </template>
@@ -92,21 +104,105 @@
           <el-button type="primary" size="mini" @click="handleReview(row)">
             Review
           </el-button>
-          <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
-          <!--            Publish-->
-          <!--          </el-button>-->
-          <!--          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-          <!--            Draft-->
-          <!--          </el-button>-->
-          <!--          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">-->
-          <!--            Delete-->
-          <!--          </el-button>-->
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            Edit
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
+    <!--    events-->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormEventsVisible">
+      <el-form ref="dataForm"  :model="eventsTempData" label-position="left" label-width="140px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="Event Type">
+          <el-select v-model="eventsTempData.is_all" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in eventsOne" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Event Name">
+          <el-input  v-model="eventsTempData.name" class="filter-item"  placeholder="Please input"></el-input>
+        </el-form-item>
+        <el-form-item label="Deal/Discount For ESL Passport Members">
+          <el-input v-model="eventsTempData.type_desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Event Description">
+          <el-input v-model="eventsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+
+
+        <el-form-item label="Event Price">
+          <el-input type="number" v-model="eventsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Location Category">
+          <el-select v-model="eventsTempData.city" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Event Location">
+          <el-input  v-model="eventsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Event Date" >
+          <!--          <el-input v-model="temp.birthday" />-->
+          <el-date-picker
+            v-model="eventsTempData.date"
+            type="date"
+            placeholder="Please picker a date"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="Start Time & End Time">
+          <el-time-select
+            placeholder="Start Time"
+            v-model="eventsTempData.start_time"
+            :picker-options="{
+      start: '00:00',
+      step: '00:01',
+      end: '24:00'
+    }">
+          </el-time-select>
+          <el-time-select
+            placeholder="End Time"
+            v-model="eventsTempData.end_time"
+            :picker-options="{
+       start: '00:00',
+      step: '00:01',
+      end: '24:00',
+      minTime: eventsTempData.start_time
+    }">
+          </el-time-select>
+        </el-form-item>
+
+        <el-form-item label="Event Flyer">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            :action=uploadRequestUrl
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadEventsFileSuccess"
+            :file-list="eventsFileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormEventsVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="updateData">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="Status">
@@ -141,10 +237,11 @@
 </template>
 
 <script>
-import { eventsList,approveEvent } from '@/api/events'
+import { eventsList,approveEvent ,addEvent} from '@/api/events'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { userObjectList } from '@/api/member' // secondary package based on el-pagination
 
 export default {
   name: 'index',
@@ -161,8 +258,19 @@ export default {
     }
 
   },
+  computed:{
+    token() {
+      return this.$store.state.user.token
+    },
+    uploadHeaders(){
+      return {
+        token:this.$store.state.user.token
+      }
+    }
+  },
   data() {
     return {
+      uploadRequestUrl:process.env.VUE_APP_UPLOAD_API,
       tableKey: 0,
       list: null,
       total: 0,
@@ -190,13 +298,41 @@ export default {
       rules: {
         type: [{ required: true, message: 'status is required', trigger: 'change' }],
       },
-      downloadLoading: false
+      downloadLoading: false,
+      eventsFileUrl:undefined,
+      eventsFileList:undefined,
+      dialogFormEventsVisible:false,
+      eventsTempData:{
+        user_id:1,
+        name:undefined,
+        desc:undefined,
+        is_all:undefined,
+        type_desc:undefined,
+        pay_money:undefined,
+        date:undefined,
+        start_time:undefined,
+        end_time:undefined,
+        file:undefined,
+        location:undefined,
+        city:undefined,
+        is_unregister: 0
+      },
+      eventsOne:[{label:'Social',value:1},{label:'Professional',value: 2}],
+      popuCityList:[],
+
     }
   },
   created() {
     this.getList()
+    this.getUserObjList()
   },
   methods: {
+    getUserObjList(){
+      userObjectList({pid:71}).then(res=>{
+        console.log(res)
+        this.popuCityList = res.message
+      })
+    },
     getList() {
       this.listLoading = true
       // console.log(this.listQuery)
@@ -274,13 +410,44 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.eventsTempData = Object.assign({}, row) // copy obj
+      this.eventsTempData.event_id = row.id
       this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.dialogFormEventsVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.eventsTempData)
+
+          addEvent(tempData).then(() => {
+            this.getList()
+            this.dialogFormEventsVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    uploadEventsFileSuccess(response,file,eventsFileList){
+      console.log(response)
+      // console.log(file)
+      // console.log(fileList)
+      if (response.code == 200){
+        this.eventsFileUrl = response.data[0].file_url
+        this.eventsTempData.file = response.data[0].file_url
+        let file_name = response.data[0].file_name
+
+      }else{
+        console.log(response.msg)
+      }
     },
     handleReview(row) {
       // this.temp = Object.assign({}, row)
@@ -320,25 +487,7 @@ export default {
         }
       })
     },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
+
     handleDelete(row, index) {
       this.$notify({
         title: 'Success',

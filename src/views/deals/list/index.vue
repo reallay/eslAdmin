@@ -1,21 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.pay_money" placeholder="Pay Money" type="number" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.status" placeholder="Status" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in statusOptions" :key="item.label" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleAddDeals">
-        Add
-      </el-button>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
+<!--      <el-input v-model="listQuery.pay_money" placeholder="Pay Money" type="number" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
+<!--      <el-select v-model="listQuery.status" placeholder="Status" clearable style="width: 90px" class="filter-item">-->
+<!--        <el-option v-for="item in statusOptions" :key="item.label" :label="item.label" :value="item.value" />-->
+<!--      </el-select>-->
+<!--      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">-->
+<!--        Search-->
+<!--      </el-button>-->
+<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
+<!--        Export-->
+<!--      </el-button>-->
     </div>
-
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -29,23 +25,8 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="Desc" style="word-break: break-all;">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
-            <el-form-item label="File" style="color: #20a0ff;">
-              <span><a :href="props.row.file">{{ props.row.file }}</a></span>
-            </el-form-item>
-            <el-form-item label="IS_ALL">
-              <span>{{ props.row.is_all }}</span>
-            </el-form-item>
-            <el-form-item label="Type">
-              <span>{{ props.row.type }}</span>
-            </el-form-item>
-            <el-form-item label="Identity">
-              <span>{{ props.row.identity }}</span>
-            </el-form-item>
-            <el-form-item label="Due Contract">
-              <span>{{ props.row.due_contract }}</span>
+            <el-form-item label="Location Category">
+              <span> {{ props.row.city }}</span>
             </el-form-item>
           </el-form>
         </template>
@@ -55,19 +36,50 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="First&Last Name" width="150px" align="center">
+      <el-table-column label="Deal/Discount Name" width="150px" align="center">
         <template slot-scope="{row}">
-          <span v-if="row.user_info">{{ row.user_info.first_name}} {{row.user_info.last_name}}</span>
+          <span v-if="row.desc">{{ row.desc}}</span>
         </template>
       </el-table-column>
+      <el-table-column label="Participating Locations" width="150px" align="center">
+        <template slot-scope="{row}">
+          <a :href="row.file">{{row.file}}</a>
+<!--          <span v-if="row.file">{{ row.file}}</span>-->
+        </template>
+      </el-table-column>
+      <el-table-column label="City" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.location">{{ row.location}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Multiple Locations or 1" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.is_all==1">All Locations</span>
+          <span v-if="row.is_all==0">Limited</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal/Discount" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.type==1">Deal</span>
+          <span v-if="row.type==2">Discount</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal/Discount Duration" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.due_contract == 1">1 year</span>
+          <span v-if="row.due_contract == 2">2 year</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Dog Friendly" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.allowed_dog == 1">Yes</span>
+          <span v-if="row.allowed_dog == 0">Not</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="Reason" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reason}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Pay Money" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.pay_money }}</span>
         </template>
       </el-table-column>
 
@@ -89,6 +101,9 @@
           <el-button type="primary" size="mini" @click="handleReview(row)">
             Review
           </el-button>
+          <el-button type="primary" size="mini" @click="handleEdit(row)">
+            Edit
+          </el-button>
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            Publish-->
 <!--          </el-button>-->
@@ -103,6 +118,69 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+<!--    deals-->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormDealsVisible">
+      <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="140px" style="width: 540px; margin-left:50px;">
+        <el-form-item label="Deal or Discount">
+          <el-select v-model="dealsTempData.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsType" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Deal/Discount Name">
+          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Multiple Locations or 1">
+          <el-select v-model="dealsTempData.is_all" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsTwo" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Location Category">
+          <el-select v-model="dealsTempData.city" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="City">
+          <el-input  v-model="dealsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
+        </el-form-item>
+        <el-form-item label="Deal/Discount Duration">
+          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Dog Friendly">
+          <el-select v-model="dealsTempData.allowed_dog" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in allowedDogOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Url">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            :action=uploadRequestUrl
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadFileSuccess"
+            :file-list="fileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormDealsVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="editData()">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -120,66 +198,6 @@
           Cancel
         </el-button>
         <el-button type="primary" @click="reviewData">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormDealsVisible">
-      <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type">
-          <el-select v-model="dealsTempData.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in dealsType" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="IS All">
-          <el-select v-model="dealsTempData.is_all" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in dealsTwo" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Due Contract">
-          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Pay Money">
-            <el-input type="number" v-model="dealsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
-        </el-form-item>
-        <el-form-item label="Popular City">
-          <el-select v-model="dealsTempData.city" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Location">
-          <el-input  v-model="dealsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
-        </el-form-item>
-        <el-form-item label="Desc">
-          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-        <el-form-item label="Url">
-          <el-upload
-            class="upload-demo"
-            drag
-            :headers="uploadHeaders"
-            name="file[]"
-            action="http://api.test.esl-passport.cn/api/admin/upload"
-            multiple
-            list-type="picture"
-            :limit="1"
-            :on-success="uploadFileSuccess"
-            :file-list="fileList"
-          >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
-            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
-          </el-upload>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormDealsVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary" @click="createDeals">
           Confirm
         </el-button>
       </div>
@@ -221,10 +239,12 @@ export default {
   },
   data() {
     return {
+      uploadRequestUrl:process.env.VUE_APP_UPLOAD_API,
       dealsType:[{label:'Deal',value:1},{label:'Discount',value:2}],
       dealsTwo:[{label:'All Locations',value:1},{label:'Limited',value:0}],
       dealsThree:[{label:'1 year',value:1},{label:'2 year',value:2}],
       dealsFour:[{label:'Shanghai',value:1},{label:'Other',value:0}],
+      allowedDogOptions:[{label:"Yes",value:1},{label: "No",value: 0}],
       userListData:[],
       popuCityList:[],
 
@@ -239,7 +259,10 @@ export default {
         deal_id:undefined,
         city:undefined,
         location:undefined,
-        identity:undefined
+        identity:undefined,
+        file_name:undefined,
+        allowed_dog:undefined,
+
       },
       fileUrl:undefined,
       fileList:undefined,
@@ -301,33 +324,8 @@ export default {
     },
     getUserObjList(){
       userObjectList({pid:71}).then(res=>{
-        console.log(res)
           this.popuCityList = res.message
       })
-    },
-    handleAddDeals(){
-      this.dialogFormDealsVisible=true
-
-    },
-    createDeals(){
-      console.log(this.dealsTempData)
-      addDeals(this.dealsTempData).then(response=>{
-        console.log(response)
-      })
-      // let data = {
-      //   user_id
-      //   type	int	Y		类型
-      //   is_all	int	Y		是否全部
-      //   file	string	N		文件URl
-      //   due_contract	int	N		合同期限
-      //   pay_money	int	N		支付金额
-      //   desc	desc	N
-      //   deal_id	int	Y
-      //   city	string	Y
-      //   location	string	Y
-      //   identity
-      // }
-
     },
     uploadFileSuccess(response,file,fileList){
       console.log(response)
@@ -426,6 +424,53 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateArticle(tempData).then(() => {
+            const index = this.list.findIndex(v => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleEdit(row){
+
+      this.dealsTempData = Object.assign({}, row) // copy obj
+      this.dealsTempData.deal_id = row.id
+      this.dialogStatus = 'update'
+      this.dialogFormDealsVisible=true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    editData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.dealsTempData)
+
+          addDeals(tempData).then(() => {
+            this.getList()
+            this.dialogFormDealsVisible=false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
     handleReview(row) {
       // this.temp = Object.assign({}, row)
       this.temp.deal_id = row.id
@@ -464,25 +509,7 @@ export default {
         }
       })
     },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
+
     handleDelete(row, index) {
       this.$notify({
         title: 'Success',

@@ -14,9 +14,12 @@
 <!--      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">-->
 <!--        Search-->
 <!--      </el-button>-->
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+<!--      <el-tag v-permission="['lei']">admin</el-tag>-->
+
+      <el-button v-permission="['lei']"  class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         Add
       </el-button>
+
 <!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
 <!--        Export-->
 <!--      </el-button>-->
@@ -48,6 +51,8 @@
           <span class="link-type" v-if="row.cate==4">Business</span>
           <span class="link-type" v-if="row.cate==5">Vendor</span>
           <span class="link-type" v-if="row.cate==6">Deal</span>
+          <span class="link-type" v-if="row.cate==7">Discount</span>
+          <span class="link-type" v-if="row.cate==8">Contact</span>
         </template>
       </el-table-column>
       <el-table-column label="Link" width="110px" align="center">
@@ -62,11 +67,11 @@
           <span v-if="row.position == 3">Bottom</span>
         </template>
       </el-table-column>
-      <el-table-column label="Sort" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sort }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="Sort" width="110px" align="center">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span>{{ row.sort }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="Title" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.title }}</span>
@@ -81,13 +86,13 @@
 <!--          <span>{{ row.url }}</span>-->
         </template>
       </el-table-column>
-      <el-table-column label="Is Delete" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag>
-            {{ row.is_delete }}
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="Is Delete" class-name="status-col" width="100">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <el-tag>-->
+<!--            {{ row.is_delete }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -135,7 +140,7 @@
             drag
             :headers="uploadHeaders"
             name="file[]"
-            action="http://api.test.esl-passport.cn/api/admin/upload"
+            :action=uploadRequestUrl
             multiple
             list-type="picture"
             :limit="1"
@@ -176,6 +181,7 @@ import {add,adList,adDetail } from '@/api/ads'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import permission from '@/directive/permission/permission'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -193,7 +199,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 export default {
   name: 'index',
   components: { Pagination },
-  directives: { waves },
+  directives: { waves,permission },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -209,6 +215,7 @@ export default {
   },
   data() {
     return {
+      uploadRequestUrl:process.env.VUE_APP_UPLOAD_API,
       tableKey: 0,
       list: null,
       total: 0,

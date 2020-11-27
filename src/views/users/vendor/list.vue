@@ -1,27 +1,21 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.nickname" placeholder="Nickname" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.work_email" placeholder="Work Email" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.vendor_name" placeholder="Vendor Name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.country" placeholder="Country" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.province" placeholder="Province" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.city" placeholder="City" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.phone" placeholder="Phone" style="width: 200px;"  @keyup.enter.native="handleFilter"></el-input>
-      <el-select v-model="listQuery.is_educator" placeholder="Is Educator" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
-      </el-select>
-      <el-select v-model="listQuery.is_seeking" placeholder="Is Seeking" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in seekingOptions" :key="index" :label="item.label" :value="item.label"></el-option>
-      </el-select>
-      <el-select v-model="listQuery.sex" placeholder="Gender" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in sexOptions" :key="index" :label="item.label" :value="item.value"></el-option>
-      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         Search
       </el-button>
-<!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
-<!--        Add-->
+      <!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
+      <!--        Add-->
+      <!--      </el-button>-->
+<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
+<!--        Export-->
 <!--      </el-button>-->
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
-
     </div>
 
     <el-table
@@ -37,158 +31,82 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="Email">
-              <span>{{ props.row.email }}</span>
+            <el-form-item label="Address" v-if="props.row.address !=''">
+              <span>{{ props.row.address }}</span>
             </el-form-item>
-            <el-form-item label="Country">
-              <span>{{ props.row.country }}</span>
+
+            <el-form-item label="Business Reg Number">
+              <span>{{ props.row.busin_reg_num }}</span>
             </el-form-item>
             <el-form-item label="Province">
-              <span>{{ props.row.province }}</span>
+              <span>{{ props.row.province}}</span>
             </el-form-item>
             <el-form-item label="City">
-              <span>{{ props.row.city }}</span>
+              <span>{{ props.row.city}}</span>
             </el-form-item>
-            <el-form-item label="Language">
-              <span>{{ props.row.language }}</span>
+            <el-form-item label="District">
+              <span>{{ props.row.district }}</span>
             </el-form-item>
-            <el-form-item label="Birthday">
-              <span>{{ props.row.birthday }}</span>
+            <el-form-item label="First Language">
+              <span>{{ props.row.first_language }}</span>
             </el-form-item>
-            <el-collapse accordion>
-              <el-collapse-item v-if="props.row.educator">
-                <template slot="title" >
-                  <b style="font-size:28px;color: #99a9bf;"> Educator Info</b>
-                </template>
-                <div><span>First name & Last name:</span>{{props.row.educator.first_name}}{{props.row.educator.last_name}}</div>
-                <div><span>Location:</span>{{props.row.educator.country}}{{props.row.educator.province}}{{props.row.educator.city}}{{props.row.educator.address}}</div>
-                <div><span>Sub Identity Name:</span>{{props.row.educator.sub_identity_name}}</div>
-                <div><span>Bio:</span>{{props.row.educator.bio}}</div>
-                <div><span>Hobbies:</span>{{props.row.educator.hobbies}}</div>
-                <div><span>Nationality:</span>{{props.row.educator.nationality}}</div>
-                <div><span>Profile photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.educator.profile_photo"
-                    :preview-src-list="[props.row.educator.profile_photo]">
-                  </el-image>
-                </div>
-                <div><span>Header photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.educator.header_photo"
-                    :preview-src-list="[props.row.educator.header_photo]">
-                  </el-image>
-                </div>
-                <div><span>Video:</span>
-                  <video :src="props.row.educator.video_url"></video>
-                </div>
+            <el-form-item label="Dog Friendly">
+            <span v-if="props.row.is_dog_friendly==1">Yes</span>
+            <span v-if="props.row.is_dog_friendly==0">Not</span>
+            </el-form-item>
+            <el-form-item label="Is Events">
+              <span v-if="props.row.is_events==1">Yes</span>
+              <span v-if="props.row.is_events==0">Not</span>
+            </el-form-item>
+            <el-form-item label="Job Title">
+              <span>{{ props.row.job_title }}</span>
+            </el-form-item>
+            <el-form-item label="Nationality">
+              <span>{{ props.row.nationality }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Bio">
+              <span>{{ props.row.vendor_bio }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Name">
+              <span>{{ props.row.vendor_name }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Name En">
+              <span>{{ props.row.vendor_name_en }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Name En">
+              <span>{{ props.row.vendor_name_en }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Type Name">
+              <span>{{ props.row.vendor_type_name }}</span>
+            </el-form-item>
 
-              </el-collapse-item>
-              <el-collapse-item v-if="props.row.business">
-                <template slot="title" >
-                  <b style="font-size:28px;color: #99a9bf;"> Business Info</b>
-                </template>
-                <div><span>First name & Last name:</span>{{props.row.business.first_name}}{{props.row.business.last_name}}</div>
-                <div><span>Location:</span>{{props.row.business.country}}{{props.row.business.province}}{{props.row.business.city}}{{props.row.business.address}}</div>
-                <div><span>Sub Identity Name:</span>{{props.row.business.sub_identity_name}}</div>
-                <div><span>Bio:</span>{{props.row.business.bio}}</div>
-                <div><span>Business Bio:</span>{{props.row.business.business_bio}}</div>
-                <div><span>Business name:</span>{{props.row.business.business_name}}</div>
-                <div><span>Business phone:</span>{{props.row.business.business_phone}}</div>
-                <div><span>Business type name:</span>{{props.row.business.business_type_name}}</div>
-                <div><span>contact name:</span>{{props.row.business.contact_name}}</div>
-                <div><span>contact phone:</span>{{props.row.business.contact_phone}}</div>
-                <div><span>Curriculum:</span>{{props.row.business.curriculum}}</div>
-                <div><span>Felds Trips:</span>{{props.row.business.felds_trips}}</div>
-                <div><span>is_currently_hiring:</span>{{props.row.business.is_currently_hiring}}</div>
-                <div><span>is_events:</span>{{props.row.business.is_events}}</div>
-                <div><span>is_special_needs:</span>{{props.row.business.is_special_needs}}</div>
-                <div><span>job title:</span>{{props.row.business.job_title}}</div>
-                <div><span>staff student ratio:</span>{{props.row.business.staff_student_ratio}}</div>
-                <div><span>teachnonlogy available:</span>{{props.row.business.technology_available}}</div>
-                <div><span>website:</span>{{props.row.business.website}}</div>
-                <div><span>work email:</span>{{props.row.business.work_email}}</div>
-                <div><span>year founded:</span>{{props.row.business.year_founded}}</div>
-                <div><span>Hobbies:</span>{{props.row.business.hobbies}}</div>
-                <div><span>Nationality:</span>{{props.row.business.nationality}}</div>
-                <div><span>Profile photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.business.profile_photo"
-                    :preview-src-list="[props.row.business.profile_photo]">
-                  </el-image>
-                </div>
-                <div><span>logo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.business.logo"
-                    :preview-src-list="[props.row.business.logo]">
-                  </el-image>
-                </div>
-                <div><span>Header photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.business.header_photo"
-                    :preview-src-list="[props.row.business.header_photo]">
-                  </el-image>
-                </div>
-                <div><span>Video:</span>
-                  <video :src="props.row.business.video_url"></video>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item v-if="props.row.vendor">
-                <template slot="title" >
-                  <b style="font-size:28px;color: #99a9bf;"> Vendor Info</b>
-                </template>
-                <div><span>First name & Last name:</span>{{props.row.vendor.first_name}}{{props.row.vendor.last_name}}</div>
-                <div><span>Location:</span>{{props.row.vendor.country}}{{props.row.vendor.province}}{{props.row.vendor.city}}{{props.row.vendor.address}}</div>
-                <div><span>Business reg img:</span>{{props.row.vendor.busin_reg_img}}</div>
-                <div><span>Business reg number:</span>{{props.row.vendor.busin_reg_num}}</div>
-                <div><span>Vendor Bio:</span>{{props.row.vendor.vendor_bio}}</div>
-                <div><span>Vendor name:</span>{{props.row.vendor.vendor_name}}</div>
-                <div><span>Vendor name en:</span>{{props.row.vendor.vendor_name_en}}</div>
-                <div><span>Vendor type name:</span>{{props.row.vendor.vendor_type_name}}</div>
-
-                <div><span>is_dog_friendly:</span>{{props.row.vendor.is_dog_friendly}}</div>
-                <div><span>is_events:</span>{{props.row.vendor.is_events}}</div>
-                <div><span>job title:</span>{{props.row.vendor.job_title}}</div>
-                <div><span>Legal company name:</span>{{props.row.vendor.legal_company_name}}</div>
-                <div><span>phone:</span>{{props.row.vendor.phone}}</div>
-
-                <div><span>website:</span>{{props.row.vendor.website}}</div>
-                <div><span>work email:</span>{{props.row.vendor.work_email}}</div>
-                <div><span>wechat public name:</span>{{props.row.vendor.wechat_public_name}}</div>
-                <div><span>wechat public qrcode:</span>{{props.row.vendor.wechat_public_qrcode}}</div>
-                <div><span>Nationality:</span>{{props.row.vendor.nationality}}</div>
-                <div><span>Profile photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.vendor.profile_photo"
-                    :preview-src-list="[props.row.vendor.profile_photo]">
-                  </el-image>
-                </div>
-                <div><span>logo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.vendor.logo"
-                    :preview-src-list="[props.row.vendor.logo]">
-                  </el-image>
-                </div>
-                <div><span>Header photo:</span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="props.row.vendor.header_photo"
-                    :preview-src-list="[props.row.vendor.header_photo]">
-                  </el-image>
-                </div>
-                <div><span>Video:</span>
-                  <video :src="props.row.vendor.video_url"></video>
-                </div>
-              </el-collapse-item>
-
-            </el-collapse>
-
+            <el-form-item label="Email">
+              <span>{{ props.row.work_email }}</span>
+            </el-form-item>
+            <el-form-item label="Website">
+              <span>{{ props.row.website }}</span>
+            </el-form-item>
+            <el-form-item label="Wechat Name">
+              <span>{{ props.row.wechat_public_name }}</span>
+            </el-form-item>
+            <el-form-item label="Business Reg img" v-if="props.row.busin_reg_img !='' ">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.busin_reg_img"  :preview-src-list="[props.row.busin_reg_img]"></el-image>
+            </el-form-item>
+            <el-form-item label="Profile Photo" v-if="props.row.profile_photo != '' ">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.profile_photo"  :preview-src-list="[props.row.profile_photo]"></el-image>
+            </el-form-item>
+            <el-form-item label="Header Photo" v-if="props.row.header_photo != '' ">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.header_photo"  :preview-src-list="[props.row.header_photo]"></el-image>
+            </el-form-item>
+            <el-form-item label="Logo" v-if="props.row.logo != '' ">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.logo"  :preview-src-list="[props.row.logo]"></el-image>
+            </el-form-item>
+            <el-form-item label="Wechat Qrcode" v-if="props.row.wechat_public_qrcode !='' ">
+              <el-image style="width: 100px;height: 100px;" :src="props.row.wechat_public_qrcode"  :preview-src-list="[props.row.wechat_public_qrcode]"></el-image>
+            </el-form-item>
+            <el-form-item label="Video" v-if="props.row.video_url != '' ">
+              <video style="width: 200px;" :src="props.row.video_url"></video>
+            </el-form-item>
           </el-form>
         </template>
       </el-table-column>
@@ -197,9 +115,47 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Name" width="110">
+      <el-table-column label="Nickname" width="110">
         <template slot-scope="scope">
           {{ scope.row.nickname }}
+        </template>
+      </el-table-column>
+      <el-table-column label="First&&Last Name" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.first_name }} {{scope.row.last_name}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Legal Company Name" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.legal_company_name}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Membership Level" width="110">
+        <template slot-scope="scope">
+<!--          {{scope.row.level}}-->
+          <span v-if="scope.row.level == 1">Basic </span>
+          <span v-if="scope.row.level == 2">Pro </span>
+          <span v-if="scope.row.level == 3">Plus </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal Count" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.deals_count}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal Number" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.deals_num}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Event Count" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.event_count}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Event Number" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.events_num}}
         </template>
       </el-table-column>
       <el-table-column label="Phone" width="110" align="center">
@@ -207,42 +163,8 @@
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Is Seeking" width="110" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.is_seeking===0">No</span>
-          <span v-if="scope.row.is_seeking===1">Yes</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Gender" width="110" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.sex === 1">Male</span>
-          <span v-if="scope.row.sex === 2">Female</span>
-          <span v-if="scope.row.sex === 0">Unc</span>
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="Identity" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.identity ===0" effect="dark" color="#005956">Other</el-tag>
-          <el-tag v-if="scope.row.identity ===1" effect="dark" color="#0aa0a8">Educator</el-tag>
-          <el-tag v-if="scope.row.identity ===2" effect="dark" color="#b1c452">Business</el-tag>
-          <el-tag v-if="scope.row.identity ===3" effect="dark" color="#00b3d2">Vendor</el-tag>
-        </template>
-      </el-table-column>
-<!--      <el-table-column label="Deals" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.deals_count }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Events" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.event_count }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Membership Level" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.level }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+
+
       <el-table-column label="Deals" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleAddDeals(row)">
@@ -262,18 +184,6 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
-<!--          <el-button type="primary" size="mini" @click="handleFetchDetail(row)">-->
-<!--            Detail-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
-<!--            Publish-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row,$index)">-->
-<!--            Recover-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.is_delete!=1" size="mini" type="danger" @click="handleDelete(row,$index)">-->
-<!--            Delete-->
-<!--          </el-button>-->
           <el-button size="mini" type="primary"  @click="handleMemberLevel(row,$index)">Upgrade</el-button>
         </template>
       </el-table-column>
@@ -323,7 +233,7 @@
             drag
             :headers="uploadHeaders"
             name="file[]"
-            action="http://api.test.esl-passport.cn/api/admin/upload"
+            :action=uploadRequestUrl
             multiple
             list-type="picture"
             :limit="1"
@@ -346,7 +256,7 @@
       </div>
     </el-dialog>
 
-<!--    events-->
+    <!--    events-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormEventsVisible">
       <el-form ref="dataForm"  :model="eventsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
 
@@ -419,7 +329,7 @@
             drag
             :headers="uploadHeaders"
             name="file[]"
-            action="http://api.test.esl-passport.cn/api/admin/upload"
+            :action=uploadRequestUrl
             multiple
             list-type="picture"
             :limit="1"
@@ -465,26 +375,26 @@
           <el-input v-model="temp.email" />
         </el-form-item>
         <el-form-item label="birthday" prop="birthday">
-<!--          <el-input v-model="temp.birthday" />-->
+          <!--          <el-input v-model="temp.birthday" />-->
           <el-date-picker
             v-model="temp.birthday"
             type="date"
             placeholder="Please picker a date"
-            >
+          >
           </el-date-picker>
         </el-form-item>
 
-<!--        <el-form-item label="Status">-->
-<!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Imp">-->
-<!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Remark">-->
-<!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="Status">-->
+        <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
+        <!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
+        <!--          </el-select>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="Imp">-->
+        <!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="Remark">-->
+        <!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -497,7 +407,7 @@
     </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormUpgrade">
-<!--      :rules="rules"-->
+      <!--      :rules="rules"-->
       <el-form ref="dataForm"  :model="tempUpgrade" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
         <el-form-item label="Identity" prop="identity">
           <el-select @change="changeIdentity" v-model="tempUpgrade.identity" class="filter-item" placeholder="Choose Identity">
@@ -542,7 +452,7 @@
 
 <script>
 
-import { userList, editUserInfo, deleteUser, vipList, changeVipLevel, userObjectList } from '@/api/member'
+import { userList, editUserInfo, deleteUser, vipList, changeVipLevel, userObjectList,vendorList } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -566,6 +476,7 @@ export default {
   },
   data() {
     return {
+      uploadRequestUrl:process.env.VUE_APP_UPLOAD_API,
       dealsType:[{label:'Deal',value:1},{label:'Discount',value:2}],
       dealsTwo:[{label:'All Locations',value:1},{label:'Limited',value:0}],
       dealsThree:[{label:'1 year',value:1},{label:'2 year',value:2}],
@@ -726,18 +637,18 @@ export default {
           this.dialogFormEventsVisible=false
           this.eventsTempData =  {
             user_id:1,
-              name:undefined,
-              desc:undefined,
-              is_all:undefined,
-              type_desc:undefined,
-              pay_money:undefined,
-              date:undefined,
-              start_time:undefined,
-              end_time:undefined,
-              file:undefined,
-              location:undefined,
-              city:undefined,
-              is_unregister: 0
+            name:undefined,
+            desc:undefined,
+            is_all:undefined,
+            type_desc:undefined,
+            pay_money:undefined,
+            date:undefined,
+            start_time:undefined,
+            end_time:undefined,
+            file:undefined,
+            location:undefined,
+            city:undefined,
+            is_unregister: 0
           }
         }
       })
@@ -787,7 +698,7 @@ export default {
     getList() {
       this.listLoading = true
       // console.log(this.listQuery)
-      userList(this.listQuery).then(response => {
+      vendorList(this.listQuery).then(response => {
         // console.log(response)
         this.list = response.message.data
         this.total = response.message.total
@@ -886,7 +797,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.user_id = row.id
+      this.temp.user_id = row.user_id
       // console.log(this.temp.birthday)
       if(this.temp.birthday == '0000-00-00'){
         this.temp.birthday = new Date()
@@ -903,7 +814,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-            // console.log(this.temp)
+          // console.log(this.temp)
           const tempData = Object.assign({}, this.temp)
           const tempObj = {}
           tempObj.username = this.temp.username
@@ -971,7 +882,7 @@ export default {
     },
     handleMemberLevel(row,index){
       // this.tempUpgrade = Object.assign({}, row) // copy obj
-      this.tempUpgrade.user_id = row.id
+      this.tempUpgrade.user_id = row.user_id
       console.log(row)
       this.dialogStatus = "Upgrade"
       this.dialogFormUpgrade = true

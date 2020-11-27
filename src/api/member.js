@@ -49,3 +49,28 @@ export function userObjectList(params){
     params
   })
 }
+
+export function vendorList(params){
+  return request({
+    url:'/admin/verdorList',
+    method:'get',
+    params
+  })
+}
+
+export function educatorList(params){
+  return request({
+    url:'/admin/educatorList',
+    method:'get',
+    params
+  })
+}
+
+export function businessList(params){
+  return request({
+    url:'/admin/businessList',
+    method:'get',
+    params
+  })
+}
+

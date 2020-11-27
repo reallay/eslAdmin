@@ -69,6 +69,24 @@ export const constantRoutes = [
         component: () => import('@/views/users/list/index'),
         meta: { title: "List", icon: 'table' }
       },
+      {
+        path: 'edu',
+        name: 'eduList',
+        component: () => import('@/views/users/edu/list'),
+        meta: { title: "Educator", icon: 'table' }
+      },
+      {
+        path: 'business',
+        name: 'businessList',
+        component: () => import('@/views/users/business/list'),
+        meta: { title: "Business", icon: 'table' }
+      },
+      {
+        path: 'vendor',
+        name: 'vendorList',
+        component: () => import('@/views/users/vendor/list'),
+        meta: { title: "Vendor", icon: 'table' }
+      },
     ]
   },
   {
