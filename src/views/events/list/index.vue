@@ -150,12 +150,14 @@
             v-model="eventsTempData.date"
             type="date"
             placeholder="Please picker a date"
+            @change="eventsTempDateChange"
           >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="Start Time & End Time">
           <el-time-select
             placeholder="Start Time"
+            @change="eventStartTimeChange"
             v-model="eventsTempData.start_time"
             :picker-options="{
       start: '00:00',
@@ -164,6 +166,7 @@
     }">
           </el-time-select>
           <el-time-select
+            @change="eventEndTimeChange"
             placeholder="End Time"
             v-model="eventsTempData.end_time"
             :picker-options="{
@@ -242,7 +245,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { userObjectList } from '@/api/member' // secondary package based on el-pagination
-
+import { format } from  'date-fns'
 export default {
   name: 'index',
   components: { Pagination },
@@ -317,6 +320,8 @@ export default {
         city:undefined,
         is_unregister: 0
       },
+      eventStartTime:undefined,
+      eventEndTime:undefined,
       eventsOne:[{label:'Social',value:1},{label:'Professional',value: 2}],
       popuCityList:[],
 
@@ -410,6 +415,7 @@ export default {
       })
     },
     handleUpdate(row) {
+      console.log(row)
       this.eventsTempData = Object.assign({}, row) // copy obj
       this.eventsTempData.event_id = row.id
       this.dialogStatus = 'update'
@@ -418,11 +424,30 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    eventsTempDateChange(e){
+      // console.log(e)
+      this.eventsTempData.date = format(e, 'yyyy-MM-dd')
+    },
+    eventStartTimeChange(e){
+        console.log(e)
+      this.eventStartTime = this.eventsTempData.date + ' ' + e + ':00'
+    },
+    eventEndTimeChange(e){
+      console.log(e)
+      this.eventEndTime = this.eventsTempData.date + ' ' + e + ':00'
+    },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          if(this.eventStartTime!=undefined){
+            this.eventsTempData.start_time = this.eventStartTime
+          }
+          if(this.eventEndTime!=undefined){
+            this.eventsTempData.end_time = this.eventEndTime
+          }
           const tempData = Object.assign({}, this.eventsTempData)
-
+          // console.log(tempData)
+          // return;
           addEvent(tempData).then(() => {
             this.getList()
             this.dialogFormEventsVisible = false

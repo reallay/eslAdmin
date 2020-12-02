@@ -101,10 +101,10 @@
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            Publish-->
 <!--          </el-button>-->
-          <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row)">
+          <el-button v-permission="['lei']" v-if="row.is_delete===1" size="mini" @click="handleRecover(row)">
             Recover
           </el-button>
-          <el-button v-if="row.is_delete===0" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-permission="['lei']" v-if="row.is_delete===0" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
         </template>

@@ -22,3 +22,11 @@ export function delJobs(data) {
     data
   })
 }
+
+export function setJobFeature(data) {
+  return request({
+    url: 'admin/setJobFeature',
+    method: 'post',
+    data
+  })
+}

@@ -1,178 +1,188 @@
 <template>
   <div class="app-container">
 
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="File" style="color: #20a0ff;">
-              <span><a :href="props.row.file">{{ props.row.file }}</a></span>
-            </el-form-item>
+    <el-tabs @tab-click="tabClickJobs" value="All"  style="margin-top:15px;" type="border-card">
+      <el-tab-pane  v-for="item in adsTypeOptions2" :key="item.value" :label="item.label" :name="item.label">
+          <el-table
+            :key="tableKey"
+            v-loading="listLoading"
+            :data="list"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+            @sort-change="sortChange"
+          >
+            <el-table-column type="expand">
+              <template slot-scope="props">
+                <el-form label-position="left" inline class="demo-table-expand">
+                  <el-form-item label="File" style="color: #20a0ff;">
+                    <span><a :href="props.row.file">{{ props.row.file }}</a></span>
+                  </el-form-item>
 
-            <el-form-item label="Desc" style="word-break: break-all;">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
-            <el-form-item label="Education">
-              <span>{{ props.row.education }}</span>
-            </el-form-item>
-            <el-form-item label="Employment_type">
-              <span>{{ props.row.employment_type }}</span>
-            </el-form-item>
-            <el-form-item label="Entry Date">
-              <span>{{ props.row.entry_date }}</span>
-            </el-form-item>
-            <el-form-item label="Interview image" v-if="props.row.interview_imgurl !=''">
-              <el-image style="width: 100px;height: 100px;" :src="props.row.interview_imgurl"  :preview-src-list="[props.row.interview_imgurl]"></el-image>
-            </el-form-item>
-            <el-form-item label="Interview Name">
-              <span>{{ props.row.interview_name }}</span>
-            </el-form-item>
-            <el-form-item label="Interview Nationality">
-              <span>{{ props.row.interview_nationality }}</span>
-            </el-form-item>
-            <el-form-item label="Is Cpr">
-              <span>{{ props.row.is_cpr }}</span>
-            </el-form-item>
-            <el-form-item label="Is Equal">
-              <span>{{ props.row.is_equal }}</span>
-            </el-form-item>
-            <el-form-item label="Is First Aide">
-              <span>{{ props.row.is_first_aide }}</span>
-            </el-form-item>
-            <el-form-item label="Is Interview">
-              <span>{{ props.row.is_interview }}</span>
-            </el-form-item>
-            <el-form-item label="Is Native">
-              <span>{{ props.row.is_native }}</span>
-            </el-form-item>
-            <el-form-item label="Is Online">
-              <span>{{ props.row.is_online }}</span>
-            </el-form-item>
-            <el-form-item label="Is Open">
-              <span>{{ props.row.is_open }}</span>
-            </el-form-item>
-            <el-form-item label="Is Paid">
-              <span>{{ props.row.is_paid }}</span>
-            </el-form-item>
-            <el-form-item label="Is Teaching Exp">
-              <span>{{ props.row.is_teaching_exp }}</span>
-            </el-form-item>
-            <el-form-item label="Is Teaching License">
-              <span>{{ props.row.is_teaching_license }}</span>
-            </el-form-item>
+                  <el-form-item label="Desc" style="word-break: break-all;">
+                    <span>{{ props.row.desc }}</span>
+                  </el-form-item>
+                  <el-form-item label="Education">
+                    <span>{{ props.row.education }}</span>
+                  </el-form-item>
+                  <el-form-item label="Employment_type">
+                    <span>{{ props.row.employment_type }}</span>
+                  </el-form-item>
+                  <el-form-item label="Entry Date">
+                    <span>{{ props.row.entry_date }}</span>
+                  </el-form-item>
+                  <el-form-item label="Interview image" v-if="props.row.interview_imgurl !=''">
+                    <el-image style="width: 100px;height: 100px;" :src="props.row.interview_imgurl"  :preview-src-list="[props.row.interview_imgurl]"></el-image>
+                  </el-form-item>
+                  <el-form-item label="Interview Name">
+                    <span>{{ props.row.interview_name }}</span>
+                  </el-form-item>
+                  <el-form-item label="Interview Nationality">
+                    <span>{{ props.row.interview_nationality }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Cpr">
+                    <span>{{ props.row.is_cpr }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Equal">
+                    <span>{{ props.row.is_equal }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is First Aide">
+                    <span>{{ props.row.is_first_aide }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Interview">
+                    <span>{{ props.row.is_interview }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Native">
+                    <span>{{ props.row.is_native }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Online">
+                    <span>{{ props.row.is_online }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Open">
+                    <span>{{ props.row.is_open }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Paid">
+                    <span>{{ props.row.is_paid }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Teaching Exp">
+                    <span>{{ props.row.is_teaching_exp }}</span>
+                  </el-form-item>
+                  <el-form-item label="Is Teaching License">
+                    <span>{{ props.row.is_teaching_license }}</span>
+                  </el-form-item>
 
-            <el-form-item label="Language">
-              <span>{{ props.row.language }}</span>
-            </el-form-item>
-            <el-form-item label="nationality">
-              <span>{{ props.row.nationality }}</span>
-            </el-form-item>
-            <el-form-item label="Numbers">
-              <span>{{ props.row.numbers }}</span>
-            </el-form-item>
-            <el-form-item label="Payment Period">
-              <span>{{ props.row.payment_period }}</span>
-            </el-form-item>
+                  <el-form-item label="Language">
+                    <span>{{ props.row.language }}</span>
+                  </el-form-item>
+                  <el-form-item label="nationality">
+                    <span>{{ props.row.nationality }}</span>
+                  </el-form-item>
+                  <el-form-item label="Numbers">
+                    <span>{{ props.row.numbers }}</span>
+                  </el-form-item>
+                  <el-form-item label="Payment Period">
+                    <span>{{ props.row.payment_period }}</span>
+                  </el-form-item>
 
-            <el-form-item label="Gender">
-              <span>{{ props.row.sex }}</span>
-            </el-form-item>
-            <el-form-item label="Teaching Times">
-              <span>{{ props.row.teaching_times }}</span>
-            </el-form-item>
+                  <el-form-item label="Gender">
+                    <span>{{ props.row.sex }}</span>
+                  </el-form-item>
+                  <el-form-item label="Teaching Times">
+                    <span>{{ props.row.teaching_times }}</span>
+                  </el-form-item>
 
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80"
-                       :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Job Title" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.job_title }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Location" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.job_location }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Age" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.age }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Due Date" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.apply_due_date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Business Name" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.business_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Currency" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.currency }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Employment Type" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span v-if="">{{ row.employment_type }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Salary" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.salary_min }} - {{row.salary_max}}</span>
-        </template>
-      </el-table-column>
+                </el-form>
+              </template>
+            </el-table-column>
+            <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80"
+                             :class-name="getSortClass('id')">
+              <template slot-scope="{row}">
+                <span>{{ row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Job Title" width="150px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.job_title }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Location" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.job_location }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Age" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.age }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Due Date" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.apply_due_date }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Business Name" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.business_name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Currency" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.currency }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Employment Type" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span v-if="">{{ row.employment_type }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Salary" width="110px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.salary_min }} - {{row.salary_max}}</span>
+              </template>
+            </el-table-column>
 
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag v-if="row.status === 0" :type="row.status | statusFilter">
-            Pending
-          </el-tag>
-          <el-tag v-if="row.status === 1" :type="row.status | statusFilter">
-            Passed
-          </el-tag>
-          <el-tag v-if="row.status === 2" :type="row.status | statusFilter">
-            Refuse
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleReview(row)">
-            Review
-          </el-button>
-          <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
-          <!--            Publish-->
-          <!--          </el-button>-->
-          <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row)">
-            Recover
-          </el-button>
-          <el-button v-if="row.is_delete===0" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+            <el-table-column label="Status" class-name="status-col" width="100">
+              <template slot-scope="{row}">
+                <el-tag v-if="row.status === 0" :type="row.status | statusFilter">
+                  Pending
+                </el-tag>
+                <el-tag v-if="row.status === 1" :type="row.status | statusFilter">
+                  Passed
+                </el-tag>
+                <el-tag v-if="row.status === 2" :type="row.status | statusFilter">
+                  Refuse
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="Actions" align="center" width="280" class-name="small-padding fixed-width">
+              <template slot-scope="{row,$index}">
+                <el-button type="primary" size="mini" @click="handleAds(row)">
+                  Ads
+                </el-button>
+                <el-button type="primary" size="mini" @click="handleReview(row)">
+                  Review
+                </el-button>
+                <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
+                <!--            Publish-->
+                <!--          </el-button>-->
+                <el-button v-if="row.is_delete===1" size="mini" @click="handleRecover(row)">
+                  Recover
+                </el-button>
+                <el-button v-if="row.is_delete===0" size="mini" type="danger" @click="handleDelete(row,$index)">
+                  Delete
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+                      @pagination="getList"/>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                @pagination="getList"/>
+      </el-tab-pane>
+    </el-tabs>
+
+
+
 
     <el-dialog title="Review" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
@@ -197,36 +207,42 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
+    <el-dialog title="Ads" :visible.sync="dialogAdsFormVisible">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
+               style="width: 400px; margin-left:50px;">
+        <el-form-item label="Type">
+          <el-select v-model="adsTemp.ad_type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in adsTypeOptions" :key="item.value" :label="item.label" :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Sort">
+          <el-input v-model="adsTemp.sort" type="number" placeholder="Please input"></el-input>
+        </el-form-item>
+        <el-form-item label="Date" prop="timestamp">
+          <el-date-picker @change="adsDueDateChange" v-model="adsTemp.ad_due_time" type="datetime" placeholder="Please pick a date" />
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAdsFormVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="reviewAds">
+          Confirm
+        </el-button>
+      </div>
     </el-dialog>
+
+
   </div>
 </template>
 
 <script>
-import { jobList, approveJobs, delJobs } from '@/api/jobs'
+import { jobList, approveJobs, delJobs,setJobFeature } from '@/api/jobs'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { format } from  'date-fns'
 
 export default {
   name: 'ComplexTable',
@@ -240,9 +256,6 @@ export default {
         2: 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
@@ -253,10 +266,10 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 10,
+        ad_type:undefined
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: [{ label: 'pending', value: 0 }, { label: 'passed', value: 1 }, { label: 'refuse', value: 2 }],
       showReviewer: false,
@@ -277,18 +290,43 @@ export default {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      dialogAdsFormVisible:false,
+      adsTypeOptions:[{label:'Homepage',value:1},{label:'Jobs',value: 2}],
+      adsTypeOptions2:[{label:'All',value: 0},{label:'Homepage',value:1},{label:'Jobs',value: 2}],
+      adsTemp:{
+        job_id:undefined,
+        sort:undefined,
+        ad_type:undefined,
+        ad_due_time:undefined
+      }
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    tabClickJobs(e){
+      console.log(e)
+      if(e.index == 0){
+        this.listQuery.ad_type=undefined
+        this.getList()
+      }
+      if(e.index == 1){
+        this.listQuery.ad_type = 1
+        this.getList()
+      }
+      if(e.index == 2){
+        this.listQuery.ad_type = 2
+        this.getList()
+      }
+
+    },
     getList() {
       this.listLoading = true
-      console.log(this.listQuery)
+      // console.log(this.listQuery)
       jobList(this.listQuery).then(response => {
-        console.log(response)
+        // console.log(response)
         this.list = response.message.data
         this.total = response.message.total
 
@@ -417,7 +455,7 @@ export default {
     },
     handleRecover(row) {
       delJobs({ job_id: row.id, is_delete: 0 }).then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.code == 200) {
           this.$notify({
             title: 'Success',
@@ -426,6 +464,34 @@ export default {
             duration: 2000
           })
           this.getList()
+        }
+      })
+    },
+    handleAds(row){
+       this.dialogAdsFormVisible=true
+      this.adsTemp.job_id = row.id
+
+    },
+    adsDueDateChange(e){
+      console.log(format(e,'yyyy-MM-dd HH:mm:ss'))
+      this.adsTemp.ad_due_time = format(e,'yyyy-MM-dd HH:mm:ss')
+    },
+    reviewAds(){
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.adsTemp)
+
+          setJobFeature(tempData).then((res) => {
+            console.log(res)
+            this.dialogAdsFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+            this.getList()
+          })
         }
       })
     },
