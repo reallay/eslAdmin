@@ -27,7 +27,9 @@
                     <span>{{ props.row.education }}</span>
                   </el-form-item>
                   <el-form-item label="Employment_type">
-                    <span>{{ props.row.employment_type }}</span>
+                    <span v-if="props.row.employment_type == 1">FT</span>
+                    <span v-if="props.row.employment_type == 2">PT</span>
+                    <span v-if="props.row.employment_type == 3">S</span>
                   </el-form-item>
                   <el-form-item label="Entry Date">
                     <span>{{ props.row.entry_date }}</span>
@@ -42,34 +44,44 @@
                     <span>{{ props.row.interview_nationality }}</span>
                   </el-form-item>
                   <el-form-item label="Is Cpr">
-                    <span>{{ props.row.is_cpr }}</span>
+                    <span v-if="props.row.is_cpr == 1">Yes</span>
+                    <span v-if="props.row.is_cpr == 0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Equal">
-                    <span>{{ props.row.is_equal }}</span>
+                    <span v-if="props.row.is_equal==1">Yes</span>
+                    <span v-if="props.row.is_equal==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is First Aide">
-                    <span>{{ props.row.is_first_aide }}</span>
+                    <span v-if="props.row.is_first_aide==1">Yes</span>
+                    <span v-if="props.row.is_first_aide==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Interview">
-                    <span>{{ props.row.is_interview }}</span>
+                    <span v-if="props.row.is_interview==1">Yes</span>
+                    <span v-if="props.row.is_interview==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Native">
-                    <span>{{ props.row.is_native }}</span>
+                    <span v-if="props.row.is_native==1">Yes</span>
+                    <span v-if="props.row.is_native==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Online">
-                    <span>{{ props.row.is_online }}</span>
+                    <span v-if="props.row.is_online==1">Yes</span>
+                    <span v-if="props.row.is_online==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Open">
-                    <span>{{ props.row.is_open }}</span>
+                    <span v-if="props.row.is_open==1">Yes</span>
+                    <span v-if="props.row.is_open==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Paid">
-                    <span>{{ props.row.is_paid }}</span>
+                    <span v-if="props.row.is_paid==1">Yes</span>
+                    <span v-if="props.row.is_paid==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Teaching Exp">
-                    <span>{{ props.row.is_teaching_exp }}</span>
+                    <span v-if="props.row.is_teaching_exp==1">Yes</span>
+                    <span v-if="props.row.is_teaching_exp==0">No</span>
                   </el-form-item>
                   <el-form-item label="Is Teaching License">
-                    <span>{{ props.row.is_teaching_license }}</span>
+                    <span v-if="props.row.is_teaching_license==1">Yes</span>
+                    <span v-if="props.row.is_teaching_license==0">No</span>
                   </el-form-item>
 
                   <el-form-item label="Language">
@@ -86,7 +98,9 @@
                   </el-form-item>
 
                   <el-form-item label="Gender">
-                    <span>{{ props.row.sex }}</span>
+                    <span v-if="props.row.sex == 1">Male</span>
+                    <span v-if="props.row.sex == 2">Female</span>
+                    <span v-if="props.row.sex == 3">Both</span>
                   </el-form-item>
                   <el-form-item label="Teaching Times">
                     <span>{{ props.row.teaching_times }}</span>
@@ -326,7 +340,7 @@ export default {
       this.listLoading = true
       // console.log(this.listQuery)
       jobList(this.listQuery).then(response => {
-        // console.log(response)
+        console.log(response)
         this.list = response.message.data
         this.total = response.message.total
 

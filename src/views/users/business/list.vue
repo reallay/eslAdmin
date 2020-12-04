@@ -67,7 +67,8 @@
               <span>{{ props.row.curriculum }}</span>
             </el-form-item>
             <el-form-item label="Fields Trips" >
-              <span>{{ props.row.felds_trips }}</span>
+              <span v-if="props.row.felds_trips == 1">Yes</span>
+              <span v-if="props.row.felds_trips == 0">Not</span>
             </el-form-item>
             <el-form-item label="Hobbies" v-if="props.row.hobbies != '' ">
               <span>{{ props.row.hobbies }}</span>
@@ -87,7 +88,7 @@
             <el-form-item label="Nationality">
               <span>{{ props.row.nationality }}</span>
             </el-form-item>
-            <el-form-item label="Staff student ratio">
+            <el-form-item label="Average class size">
               <span>{{ props.row.staff_student_ratio }}</span>
             </el-form-item>
             <el-form-item label="technology_available">
@@ -107,7 +108,7 @@
               <el-image style="width: 100px;height: 100px;" :src="props.row.header_photo"  :preview-src-list="[props.row.header_photo]"></el-image>
             </el-form-item>
             <el-form-item label="Video" v-if="props.row.video_url != '' ">
-              <video style="width: 200px;" :src="props.row.video_url" controls></video>
+              <video width="200"  :src="props.row.video_url" controls></video>
             </el-form-item>
 
           </el-form>
@@ -126,6 +127,11 @@
       <el-table-column label="First&Last Name" width="140">
         <template slot-scope="scope">
           {{ scope.row.first_name }} {{ scope.row.last_name}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Wechat Id" width="130">
+        <template slot-scope="scope">
+          {{ scope.row.wx_id }}
         </template>
       </el-table-column>
       <el-table-column label="Business Name" width="130">
@@ -536,7 +542,7 @@ export default {
       this.listLoading = true
       // console.log(this.listQuery)
       businessList(this.listQuery).then(response => {
-        // console.log(response)
+        console.log(response)
         this.list = response.message.data
         this.total = response.message.total
         console.log(this.list)

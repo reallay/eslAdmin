@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column label="Event Flyer" width="150px" align="center">
         <template slot-scope="{row}">
-          <a :href="row.file">{{row.file}}</a>
+          <a :href="row.file">{{row.file_name}}</a>
 <!--          <span>{{ row.file}}</span>-->
         </template>
       </el-table-column>
@@ -318,7 +318,8 @@ export default {
         file:undefined,
         location:undefined,
         city:undefined,
-        is_unregister: 0
+        is_unregister: 0,
+        file_name:undefined
       },
       eventStartTime:undefined,
       eventEndTime:undefined,
@@ -468,6 +469,7 @@ export default {
       if (response.code == 200){
         this.eventsFileUrl = response.data[0].file_url
         this.eventsTempData.file = response.data[0].file_url
+        this.eventsTempData.file_name = file.name
         let file_name = response.data[0].file_name
 
       }else{

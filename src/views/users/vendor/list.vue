@@ -54,9 +54,9 @@
             <span v-if="props.row.is_dog_friendly==1">Yes</span>
             <span v-if="props.row.is_dog_friendly==0">Not</span>
             </el-form-item>
-            <el-form-item label="Is Events">
+            <el-form-item label="Event">
               <span v-if="props.row.is_events==1">Yes</span>
-              <span v-if="props.row.is_events==0">Not</span>
+              <span v-if="props.row.is_events==0">Unknown</span>
             </el-form-item>
             <el-form-item label="Job Title">
               <span>{{ props.row.job_title }}</span>
@@ -67,16 +67,11 @@
             <el-form-item label="Vendor Bio">
               <span>{{ props.row.vendor_bio }}</span>
             </el-form-item>
-            <el-form-item label="Vendor Name">
-              <span>{{ props.row.vendor_name }}</span>
-            </el-form-item>
-            <el-form-item label="Vendor Name En">
+
+            <el-form-item label="Company Name(EN)">
               <span>{{ props.row.vendor_name_en }}</span>
             </el-form-item>
-            <el-form-item label="Vendor Name En">
-              <span>{{ props.row.vendor_name_en }}</span>
-            </el-form-item>
-            <el-form-item label="Vendor Type Name">
+            <el-form-item label="Category">
               <span>{{ props.row.vendor_type_name }}</span>
             </el-form-item>
 
@@ -86,7 +81,7 @@
             <el-form-item label="Website">
               <span>{{ props.row.website }}</span>
             </el-form-item>
-            <el-form-item label="Wechat Name">
+            <el-form-item label="Company Wechat">
               <span>{{ props.row.wechat_public_name }}</span>
             </el-form-item>
             <el-form-item label="Business Reg img" v-if="props.row.busin_reg_img !='' ">
@@ -105,7 +100,7 @@
               <el-image style="width: 100px;height: 100px;" :src="props.row.wechat_public_qrcode"  :preview-src-list="[props.row.wechat_public_qrcode]"></el-image>
             </el-form-item>
             <el-form-item label="Video" v-if="props.row.video_url != '' ">
-              <video style="width: 200px;" :src="props.row.video_url"></video>
+              <video width="200" :src="props.row.video_url" controls></video>
             </el-form-item>
           </el-form>
         </template>
@@ -120,12 +115,17 @@
           {{ scope.row.nickname }}
         </template>
       </el-table-column>
+      <el-table-column label="Wechat Id" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.wx_id }}
+        </template>
+      </el-table-column>
       <el-table-column label="First&&Last Name" width="110">
         <template slot-scope="scope">
           {{ scope.row.first_name }} {{scope.row.last_name}}
         </template>
       </el-table-column>
-      <el-table-column label="Legal Company Name" width="110">
+      <el-table-column label="Company Name(CH)" width="110">
         <template slot-scope="scope">
           {{ scope.row.legal_company_name}}
         </template>
@@ -190,43 +190,41 @@
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormDealsVisible">
       <el-form ref="dataForm"  :model="dealsTempData" label-position="left" label-width="110px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type">
+        <el-form-item label="Deal or Discount">
           <el-select v-model="dealsTempData.type" class="filter-item" placeholder="Please select">
             <el-option v-for="item in dealsType" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="IS All">
+        <el-form-item label="Deal/Discount Name">
+          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Multiple Locations or 1">
           <el-select v-model="dealsTempData.is_all" class="filter-item" placeholder="Please select">
             <el-option v-for="item in dealsTwo" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Due Contract">
-          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Pay Money">
-          <el-input type="number" v-model="dealsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
-        </el-form-item>
-        <el-form-item label="For Unregister">
-          <el-select v-model="dealsTempData.is_unregister" class="filter-item" placeholder="Please select">
-            <el-option  label="YES" :value="1" />
-            <el-option  label="NO" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Popular City">
+        <el-form-item label="Location Category">
           <el-select v-model="dealsTempData.city" class="filter-item" placeholder="Please select">
             <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Location">
+        <el-form-item label="City">
           <el-input  v-model="dealsTempData.location" class="filter-item"  placeholder="Please select"></el-input>
         </el-form-item>
-        <el-form-item label="Desc">
-          <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        <el-form-item label="Deal/Discount Duration">
+          <el-select v-model="dealsTempData.due_contract" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in dealsThree" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
+        <el-form-item label="Dog Friendly">
+          <el-select v-model="dealsTempData.allowed_dog" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in allowedDogOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="Url">
           <el-upload
             class="upload-demo"
@@ -277,12 +275,12 @@
         <el-form-item label="Pay Money">
           <el-input type="number" v-model="eventsTempData.pay_money" class="filter-item"  placeholder="Please select"></el-input>
         </el-form-item>
-        <el-form-item label="For Unregister">
-          <el-select v-model="eventsTempData.is_unregister" class="filter-item" placeholder="Please select">
-            <el-option  label="YES" :value="1" />
-            <el-option  label="NO" :value="0" />
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="For Unregister">-->
+<!--          <el-select v-model="eventsTempData.is_unregister" class="filter-item" placeholder="Please select">-->
+<!--            <el-option  label="YES" :value="1" />-->
+<!--            <el-option  label="NO" :value="0" />-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="Popular City">
           <el-select v-model="eventsTempData.city" class="filter-item" placeholder="Please select">
             <el-option v-for="item in popuCityList" :key="item.id" :label="item.object_en" :value="item.id" />
@@ -351,50 +349,57 @@
         </el-button>
       </div>
     </el-dialog>
-
+    <!--    编辑vendor信息-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="90px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="username" prop="username">
-          <el-input v-model="temp.username" />
-        </el-form-item>
-        <el-form-item label="nickname" prop="nickname">
-          <el-input v-model="temp.nickname" />
-        </el-form-item>
-        <el-form-item label="truename" prop="truename">
-          <el-input v-model="temp.truename" />
-        </el-form-item>
-        <el-form-item label="sex" prop="sex">
-          <el-select v-model="temp.sex" class="filter-item" placeholder="Please select gender">
-            <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="phone" prop="phone">
-          <el-input v-model="temp.phone" />
-        </el-form-item>
-        <el-form-item label="email" prop="email">
-          <el-input v-model="temp.email" />
-        </el-form-item>
-        <el-form-item label="birthday" prop="birthday">
-          <!--          <el-input v-model="temp.birthday" />-->
-          <el-date-picker
-            v-model="temp.birthday"
-            type="date"
-            placeholder="Please picker a date"
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="140px" style="width: 600px; margin-left:50px;">
+        <el-form-item label="logo">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            :action=uploadRequestUrl
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadLogoSuccess"
+            :file-list="logoFileList"
           >
-          </el-date-picker>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
         </el-form-item>
-
-        <!--        <el-form-item label="Status">-->
-        <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-        <!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-        <!--          </el-select>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Imp">-->
-        <!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Remark">-->
-        <!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-        <!--        </el-form-item>-->
+        <el-form-item  label="Wechat Qrcode">
+          <el-upload
+            class="upload-demo"
+            drag
+            :headers="uploadHeaders"
+            name="file[]"
+            :action=uploadRequestUrl
+            multiple
+            list-type="picture"
+            :limit="1"
+            :on-success="uploadWechatQrcodeSuccess"
+            :file-list="wechatQrcodeFileList"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drag the file here, or <em>click to upload</em></div>
+            <!--            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="Wechat Public Name" prop="wechat_public_name">
+          <el-input v-model="temp.wechat_public_name" />
+        </el-form-item>
+        <el-form-item label="Company English Name" prop="vendor_name_en">
+          <el-input v-model="temp.vendor_name_en" />
+        </el-form-item>
+        <el-form-item label="Vendor Introduction" prop="vendor_bio">
+          <el-input v-model="temp.vendor_bio" />
+        </el-form-item>
+        <el-form-item label="Email" prop="work_email">
+          <el-input v-model="temp.work_email" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -430,29 +435,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogUserDetailVisible" title="User Detail">
-      <el-table :data="userDetailData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="id" label="Id" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-    </el-dialog>
-
   </div>
 </template>
 
 <script>
 
-import { userList, editUserInfo, deleteUser, vipList, changeVipLevel, userObjectList,vendorList } from '@/api/member'
+import { userList, editUserInfo, deleteUser, vipList, changeVipLevel, userObjectList,vendorList,addVendorBasic } from '@/api/member'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -482,6 +470,7 @@ export default {
       dealsThree:[{label:'1 year',value:1},{label:'2 year',value:2}],
       dealsFour:[{label:'Shanghai',value:1},{label:'Other',value:0}],
       eventsOne:[{label:'Social',value:1},{label:'Professional',value: 2}],
+      allowedDogOptions:[{label:"Yes",value:1},{label: "No",value: 0}],
       userListData:[],
       popuCityList:[],
       dialogFormDealsVisible:false,
@@ -498,11 +487,14 @@ export default {
         deal_id:undefined,
         city:undefined,
         location:undefined,
-        identity:undefined
+        identity:undefined,
+        file_name:undefined,
       },
       fileUrl:undefined,
       fileList:undefined,
       eventsFileUrl:undefined,
+      logoFileList:undefined,
+      wechatQrcodeFileList:undefined,
       eventsFileList:undefined,
       dialogFormEventsVisible:false,
       eventsTempData:{
@@ -518,7 +510,9 @@ export default {
         file:undefined,
         location:undefined,
         city:undefined,
-        is_unregister: 0
+        is_unregister: 0,
+        file_name: undefined
+
       },
 
       tableKey: 0,
@@ -551,13 +545,13 @@ export default {
       showReviewer: false,
       temp: {
         user_id:undefined,
-        username:undefined,
-        nickname:undefined,
-        truename:undefined,
-        sex:undefined,
-        phone: undefined,
         email:undefined,
-        birthday:''
+        logo:undefined,
+        wechat_public_qrcode:undefined,
+        wechat_public_name:undefined,
+        vendor_name_en:undefined,
+        vendor_bio:undefined,
+        work_email:undefined
       },
       tempUpgrade:{
         identity:undefined,
@@ -574,9 +568,9 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        username: [{ required: true, message: 'username is required', trigger: 'change' }],
-        birthday: [{ type: 'date', required: true, message: 'birthday is required', trigger: 'change' }],
-        nickname: [{ required: true, message: 'nickname is required', trigger: 'blur' }]
+        // username: [{ required: true, message: 'username is required', trigger: 'change' }],
+        // birthday: [{ type: 'date', required: true, message: 'birthday is required', trigger: 'change' }],
+        // nickname: [{ required: true, message: 'nickname is required', trigger: 'blur' }]
       },
       downloadLoading: false,
       dialogUserDetailVisible:false,
@@ -608,12 +602,11 @@ export default {
     },
     handleAddDeals(row){
       this.dialogFormDealsVisible=true
-      this.dealsTempData.user_id = row.id;
+      this.dealsTempData.user_id = row.user_id;
     },
     handleAddEvents(row){
       this.dialogFormEventsVisible=true
-
-      this.dealsTempData.user_id = row.id;
+      this.dealsTempData.user_id = row.user_id;
     },
     createEvents(){
       console.log(this.eventsTempData)
@@ -624,9 +617,9 @@ export default {
 
       this.eventsTempData.date =  year+'-'+month+'-'+day
 
-      if(this.eventsTempData.is_unregister==1){
-        this.eventsTempData.user_id = 1
-      }
+      // if(this.eventsTempData.is_unregister==1){
+      //   this.eventsTempData.user_id = 1
+      // }
       addEvent(this.eventsTempData).then(response=>{
         console.log(response)
         if(response.code == 200){
@@ -655,9 +648,9 @@ export default {
     },
     createDeals(){
       console.log(this.dealsTempData)
-      if(this.dealsTempData.is_unregister==1){
-        this.dealsTempData.user_id = 1
-      }
+      // if(this.dealsTempData.is_unregister==1){
+      //   this.dealsTempData.user_id = 1
+      // }
       addDeals(this.dealsTempData).then(response=>{
         console.log(response)
         if(response.code == 200){
@@ -676,7 +669,7 @@ export default {
       if (response.code == 200){
         this.fileUrl = response.data[0].file_url
         this.dealsTempData.file = response.data[0].file_url
-        let file_name = response.data[0].file_name
+        this.dealsTempData.file_name = file.name
 
       }else{
         console.log(response.msg)
@@ -689,8 +682,24 @@ export default {
       if (response.code == 200){
         this.eventsFileUrl = response.data[0].file_url
         this.eventsTempData.file = response.data[0].file_url
-        let file_name = response.data[0].file_name
+        this.eventsTempData.file_name = file.name
 
+      }else{
+        console.log(response.msg)
+      }
+    },
+    uploadLogoSuccess(response,file,eventsFileList){
+      if (response.code == 200){
+        this.logoFileList = [{name:'',url:response.data[0].file_url}]
+        this.temp.logo = response.data[0].file_url
+      }else{
+        console.log(response.msg)
+      }
+    },
+    uploadWechatQrcodeSuccess(response,file,eventsFileList){
+      if (response.code == 200){
+        this.wechatQrcodeFileList = [{name:'',url:response.data[0].file_url}]
+        this.temp.wechat_public_qrcode = response.data[0].file_url
       }else{
         console.log(response.msg)
       }
@@ -798,15 +807,10 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.user_id = row.user_id
-      // console.log(this.temp.birthday)
-      if(this.temp.birthday == '0000-00-00'){
-        this.temp.birthday = new Date()
-      }else{
-        this.temp.birthday = new Date(this.temp.birthday)
-      }
-      // console.log(this.temp.birthday)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.logoFileList = [{name:'',url:row.logo}]
+      this.wechatQrcodeFileList = [{name:'',url:row.wechat_public_qrcode}]
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -816,25 +820,8 @@ export default {
         if (valid) {
           // console.log(this.temp)
           const tempData = Object.assign({}, this.temp)
-          const tempObj = {}
-          tempObj.username = this.temp.username
-          tempObj.nickname = this.temp.nickname
-          tempObj.truename = this.temp.truename
-          tempObj.sex = this.temp.sex
-          tempObj.phone = this.temp.phone
-          tempObj.email = this.temp.email
-          tempObj.user_id = this.temp.user_id
 
-          // console.log(tempData.birthday.getFullYear())
-          let year = tempData.birthday.getFullYear()
-          let  month = tempData.birthday.getMonth()+1
-          let day = tempData.birthday.getDate()
-          let birthdayStr = year+'-'+month+'-'+day
-          tempObj.birthday = birthdayStr
-          tempData.birthday = birthdayStr // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          // console.log(tempData)
-          editUserInfo(tempObj).then((res) => {
-            console.log(res)
+          addVendorBasic(tempData).then((res) => {
             if (res.code == 200){
               this.dialogFormVisible = false
               this.$notify({
@@ -845,9 +832,6 @@ export default {
               })
               this.getList()
             }
-            // const index = this.list.findIndex(v => v.id === this.temp.id)
-            // this.list.splice(index, 1, this.temp)
-
           })
         }
       })
@@ -923,8 +907,6 @@ export default {
             }
 
           })
-
-
           // console.log(tempData)
 
         }

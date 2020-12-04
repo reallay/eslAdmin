@@ -3,9 +3,6 @@
     <div class="filter-container">
       <el-input v-model="listQuery.nickname" placeholder="Nickname" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.phone" placeholder="Phone" style="width: 200px;"  @keyup.enter.native="handleFilter"></el-input>
-      <el-select v-model="listQuery.is_educator" placeholder="Is Educator" clearable style="width: 110px;" class="filter-item">
-        <el-option v-for="(item,index) in percentOptions" :key="index" :label="item" :value="item"></el-option>
-      </el-select>
       <el-select v-model="listQuery.is_seeking" placeholder="Is Seeking" clearable style="width: 110px;" class="filter-item">
         <el-option v-for="(item,index) in seekingOptions" :key="index" :label="item.label" :value="item.label"></el-option>
       </el-select>
@@ -18,10 +15,9 @@
 <!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
 <!--        Add-->
 <!--      </el-button>-->
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
-
+<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
+<!--        Export-->
+<!--      </el-button>-->
     </div>
 
     <el-table
@@ -37,9 +33,6 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="Email">
-              <span>{{ props.row.email }}</span>
-            </el-form-item>
             <el-form-item label="Country">
               <span>{{ props.row.country }}</span>
             </el-form-item>
@@ -61,27 +54,27 @@
                   <b style="font-size:28px;color: #99a9bf;"> Educator Info</b>
                 </template>
                 <div><span>First name & Last name:</span>{{props.row.educator.first_name}}{{props.row.educator.last_name}}</div>
-                <div><span>Location:</span>{{props.row.educator.country}}{{props.row.educator.province}}{{props.row.educator.city}}{{props.row.educator.address}}</div>
+                <div><span>Location:</span>{{props.row.educator.country}}, {{props.row.educator.province}}, {{props.row.educator.city}}, {{props.row.educator.district}}, {{props.row.educator.address}}</div>
                 <div><span>Sub Identity Name:</span>{{props.row.educator.sub_identity_name}}</div>
                 <div><span>Bio:</span>{{props.row.educator.bio}}</div>
                 <div><span>Hobbies:</span>{{props.row.educator.hobbies}}</div>
                 <div><span>Nationality:</span>{{props.row.educator.nationality}}</div>
-                <div><span>Profile photo:</span>
+                <div class="photo"><span>Profile photo:</span>
                   <el-image
                     style="width: 100px; height: 100px"
                     :src="props.row.educator.profile_photo"
                     :preview-src-list="[props.row.educator.profile_photo]">
                   </el-image>
                 </div>
-                <div><span>Header photo:</span>
+                <div class="photo"><span>Header photo:</span>
                   <el-image
                     style="width: 100px; height: 100px"
                     :src="props.row.educator.header_photo"
                     :preview-src-list="[props.row.educator.header_photo]">
                   </el-image>
                 </div>
-                <div><span>Video:</span>
-                  <video :src="props.row.educator.video_url"></video>
+                <div class="video"><span>Video:</span>
+                  <video  width="120" :src="props.row.educator.video_url" controls></video>
                 </div>
 
               </el-collapse-item>
@@ -90,7 +83,7 @@
                   <b style="font-size:28px;color: #99a9bf;"> Business Info</b>
                 </template>
                 <div><span>First name & Last name:</span>{{props.row.business.first_name}}{{props.row.business.last_name}}</div>
-                <div><span>Location:</span>{{props.row.business.country}}{{props.row.business.province}}{{props.row.business.city}}{{props.row.business.address}}</div>
+                <div><span>Location:</span>{{props.row.business.country}}, {{props.row.business.province}}, {{props.row.business.city}}, {{props.row.business.district}}, {{props.row.business.address}}</div>
                 <div><span>Sub Identity Name:</span>{{props.row.business.sub_identity_name}}</div>
                 <div><span>Bio:</span>{{props.row.business.bio}}</div>
                 <div><span>Business Bio:</span>{{props.row.business.business_bio}}</div>
@@ -100,16 +93,28 @@
                 <div><span>contact name:</span>{{props.row.business.contact_name}}</div>
                 <div><span>contact phone:</span>{{props.row.business.contact_phone}}</div>
                 <div><span>Curriculum:</span>{{props.row.business.curriculum}}</div>
-                <div><span>Felds Trips:</span>{{props.row.business.felds_trips}}</div>
-                <div><span>is_currently_hiring:</span>{{props.row.business.is_currently_hiring}}</div>
-                <div><span>is_events:</span>{{props.row.business.is_events}}</div>
-                <div><span>is_special_needs:</span>{{props.row.business.is_special_needs}}</div>
-                <div><span>job title:</span>{{props.row.business.job_title}}</div>
-                <div><span>staff student ratio:</span>{{props.row.business.staff_student_ratio}}</div>
-                <div><span>teachnonlogy available:</span>{{props.row.business.technology_available}}</div>
-                <div><span>website:</span>{{props.row.business.website}}</div>
-                <div><span>work email:</span>{{props.row.business.work_email}}</div>
-                <div><span>year founded:</span>{{props.row.business.year_founded}}</div>
+                <div><span>Fields Trips:</span>
+                  <span v-if="props.row.business.felds_trips==1">Yes</span>
+                  <span v-if="props.row.business.felds_trips==0">No</span>
+                </div>
+                <div><span>is_currently_hiring:</span>
+                  <span v-if="props.row.business.is_currently_hiring==1">Yes</span>
+                  <span v-if="props.row.business.is_currently_hiring==0">No</span>
+                </div>
+                <div><span>Is Events: </span>
+                  <span v-if="props.row.business.is_events==1">Yes</span>
+                  <span v-if="props.row.business.is_events==0">No</span>
+                </div>
+                <div><span>Special Needs: </span>
+                  <span v-if="props.row.business.is_special_needs==1">Yes</span>
+                  <span v-if="props.row.business.is_special_needs==0">No</span>
+                </div>
+                <div><span>Job Title: </span>{{props.row.business.job_title}}</div>
+                <div><span>Staff student ratio:</span>{{props.row.business.staff_student_ratio}}</div>
+                <div><span>Technology Available:</span>{{props.row.business.technology_available}}</div>
+                <div><span>Website:</span>{{props.row.business.website}}</div>
+                <div><span>Work Email:</span>{{props.row.business.work_email}}</div>
+                <div><span>Year Founded:</span>{{props.row.business.year_founded}}</div>
                 <div><span>Hobbies:</span>{{props.row.business.hobbies}}</div>
                 <div><span>Nationality:</span>{{props.row.business.nationality}}</div>
                 <div><span>Profile photo:</span>
@@ -134,7 +139,7 @@
                   </el-image>
                 </div>
                 <div><span>Video:</span>
-                  <video :src="props.row.business.video_url"></video>
+                  <video width="120" controls :src="props.row.business.video_url"></video>
                 </div>
               </el-collapse-item>
               <el-collapse-item v-if="props.row.vendor">
@@ -142,6 +147,7 @@
                   <b style="font-size:28px;color: #99a9bf;"> Vendor Info</b>
                 </template>
                 <div><span>First name & Last name:</span>{{props.row.vendor.first_name}}{{props.row.vendor.last_name}}</div>
+                <div><span>Wechat Id:</span>{{props.row.vendor.wx_id}}</div>
                 <div><span>Location:</span>{{props.row.vendor.country}}{{props.row.vendor.province}}{{props.row.vendor.city}}{{props.row.vendor.address}}</div>
                 <div><span>Business reg img:</span>{{props.row.vendor.busin_reg_img}}</div>
                 <div><span>Business reg number:</span>{{props.row.vendor.busin_reg_num}}</div>
@@ -150,16 +156,22 @@
                 <div><span>Vendor name en:</span>{{props.row.vendor.vendor_name_en}}</div>
                 <div><span>Vendor type name:</span>{{props.row.vendor.vendor_type_name}}</div>
 
-                <div><span>is_dog_friendly:</span>{{props.row.vendor.is_dog_friendly}}</div>
-                <div><span>is_events:</span>{{props.row.vendor.is_events}}</div>
-                <div><span>job title:</span>{{props.row.vendor.job_title}}</div>
-                <div><span>Legal company name:</span>{{props.row.vendor.legal_company_name}}</div>
-                <div><span>phone:</span>{{props.row.vendor.phone}}</div>
+                <div><span>Is Dog Friendly:</span>
+                  <span v-if="props.row.vendor.is_dog_friendly==1">Yes</span>
+                  <span v-if="props.row.vendor.is_dog_friendly==0">No</span>
+                </div>
+                <div><span>Is Events:</span>
+                  <span v-if="props.row.vendor.is_events==1">Yes</span>
+                  <span v-if="props.row.vendor.is_events==0">No</span>
+                </div>
+                <div><span>Job Title:</span>{{props.row.vendor.job_title}}</div>
+                <div><span>Legal Company Name:</span>{{props.row.vendor.legal_company_name}}</div>
+                <div><span>Phone:</span>{{props.row.vendor.phone}}</div>
 
-                <div><span>website:</span>{{props.row.vendor.website}}</div>
-                <div><span>work email:</span>{{props.row.vendor.work_email}}</div>
-                <div><span>wechat public name:</span>{{props.row.vendor.wechat_public_name}}</div>
-                <div><span>wechat public qrcode:</span>{{props.row.vendor.wechat_public_qrcode}}</div>
+                <div><span>Website:</span>{{props.row.vendor.website}}</div>
+                <div><span>Work Email:</span>{{props.row.vendor.work_email}}</div>
+                <div><span>Wechat Public Name:</span>{{props.row.vendor.wechat_public_name}}</div>
+                <div><span>Wechat Public Qrcode:</span>{{props.row.vendor.wechat_public_qrcode}}</div>
                 <div><span>Nationality:</span>{{props.row.vendor.nationality}}</div>
                 <div><span>Profile photo:</span>
                   <el-image
@@ -183,12 +195,10 @@
                   </el-image>
                 </div>
                 <div><span>Video:</span>
-                  <video :src="props.row.vendor.video_url"></video>
+                  <video width="120" controls :src="props.row.vendor.video_url"></video>
                 </div>
               </el-collapse-item>
-
             </el-collapse>
-
           </el-form>
         </template>
       </el-table-column>
@@ -228,35 +238,7 @@
           <el-tag v-if="scope.row.identity ===3" effect="dark" color="#00b3d2">Vendor</el-tag>
         </template>
       </el-table-column>
-<!--      <el-table-column label="Deals" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.deals_count }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Events" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.event_count }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Membership Level" width="110" align="center">-->
-<!--        <template slot-scope="scope" v-if="scope.row.vendor">-->
-<!--          <span>{{ scope.row.vendor.level }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-      <el-table-column label="Deals" align="center" width="100" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleAddDeals(row)">
-            Add
-          </el-button>
-        </template>
-      </el-table-column>
-      <el-table-column label="Events" align="center" width="100" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleAddEvents(row)">
-            Add
-          </el-button>
-        </template>
-      </el-table-column>
+
       <el-table-column label="Actions" align="center" width="280" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">

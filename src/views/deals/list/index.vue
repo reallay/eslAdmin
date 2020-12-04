@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column label="Participating Locations" width="150px" align="center">
         <template slot-scope="{row}">
-          <a :href="row.file">{{row.file}}</a>
+          <a :href="row.file">{{row.file_name}}</a>
 <!--          <span v-if="row.file">{{ row.file}}</span>-->
         </template>
       </el-table-column>
@@ -296,6 +296,7 @@ export default {
         type: [{ required: true, message: 'status is required', trigger: 'change' }],
       },
       downloadLoading: false,
+      fileName:undefined
 
 
     }
@@ -329,11 +330,11 @@ export default {
     },
     uploadFileSuccess(response,file,fileList){
       console.log(response)
-      // console.log(file)
-      // console.log(fileList)
+      console.log(file)
+      console.log(fileList)
       if (response.code == 200){
-        this.fileUrl = response.data[0].file_url
-        let file_name = response.data[0].file_name
+        this.dealsTempData.file = response.data[0].file_url
+        this.dealsTempData.file_name = file.name
 
       }else{
         console.log(response.msg)

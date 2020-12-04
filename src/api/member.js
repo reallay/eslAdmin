@@ -74,3 +74,10 @@ export function businessList(params){
   })
 }
 
+export function addVendorBasic(data){
+  return request({
+    url:'/admin/addVendorBasic',
+    method:'post',
+    data
+  })
+}

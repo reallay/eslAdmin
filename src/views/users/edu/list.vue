@@ -50,7 +50,7 @@
               <el-image style="width: 100px;height: 100px;" :src="props.row.header_photo"  :preview-src-list="[props.row.header_photo]"></el-image>
             </el-form-item>
             <el-form-item label="Video" v-if="props.row.video_url != '' ">
-              <video style="width: 200px;" :src="props.row.video_url" controls></video>
+              <video width="200" :src="props.row.video_url" controls></video>
             </el-form-item>
           </el-form>
         </template>
@@ -60,7 +60,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="nickname" width="110">
+      <el-table-column label="Nickname" width="110">
         <template slot-scope="scope">
           {{ scope.row.nickname }}
         </template>
@@ -68,6 +68,11 @@
       <el-table-column label="First&Last Name" width="110">
         <template slot-scope="scope">
           {{ scope.row.first_name }} {{ scope.row.last_name}}
+        </template>
+      </el-table-column>
+      <el-table-column label="Wechat Id" width="110">
+        <template slot-scope="scope">
+          {{ scope.row.wx_id }}
         </template>
       </el-table-column>
       <el-table-column label="country" width="110">
