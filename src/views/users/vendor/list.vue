@@ -52,7 +52,7 @@
             </el-form-item>
             <el-form-item label="Dog Friendly">
             <span v-if="props.row.is_dog_friendly==1">Yes</span>
-            <span v-if="props.row.is_dog_friendly==0">Not</span>
+            <span v-if="props.row.is_dog_friendly==0">Unknown</span>
             </el-form-item>
             <el-form-item label="Event">
               <span v-if="props.row.is_events==1">Yes</span>
@@ -108,6 +108,11 @@
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="User Id" prop="user_id" >
+        <template slot-scope="{row}">
+          <span>{{ row.user_id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Nickname" width="110">

@@ -28,6 +28,21 @@
             <el-form-item label="Location Category">
               <span> {{ props.row.city }}</span>
             </el-form-item>
+            <el-form-item label="Company Name (EN)">
+              <span> {{ props.row.user_info.vendor_name_en }}</span>
+            </el-form-item>
+            <el-form-item label="Legal Company Name">
+              <span> {{ props.row.user_info.legal_company_name }}</span>
+            </el-form-item>
+            <el-form-item label="Vendor Type Name">
+              <span> {{ props.row.user_info.vendor_type_name }}</span>
+            </el-form-item>
+            <el-form-item label="Work Email">
+              <span> {{ props.row.user_info.work_email }}</span>
+            </el-form-item>
+            <el-form-item label="Wechat Id">
+              <span> {{ props.row.user_info.wx_id}}</span>
+            </el-form-item>
           </el-form>
         </template>
       </el-table-column>
@@ -36,7 +51,22 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="User Id" prop="user_id" >
+        <template slot-scope="{row}">
+          <span>{{ row.user_id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="First&&Last Name" width="110">
+        <template slot-scope="{row}" v-if="row.user_info">
+          {{ row.user_info.first_name }} {{row.user_info.last_name}}
+        </template>
+      </el-table-column>
       <el-table-column label="Deal/Discount Name" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span v-if="row.desc">{{ row.title}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Deal/Discount Desc" width="150px" align="center">
         <template slot-scope="{row}">
           <span v-if="row.desc">{{ row.desc}}</span>
         </template>
@@ -73,7 +103,7 @@
       <el-table-column label="Dog Friendly" width="150px" align="center">
         <template slot-scope="{row}">
           <span v-if="row.allowed_dog == 1">Yes</span>
-          <span v-if="row.allowed_dog == 0">Not</span>
+          <span v-if="row.allowed_dog == 0">Unknown</span>
         </template>
       </el-table-column>
 
@@ -127,6 +157,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Deal/Discount Name">
+          <el-input v-model="dealsTempData.title" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+        <el-form-item label="Deal/Discount desc">
           <el-input v-model="dealsTempData.desc" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
         </el-form-item>
         <el-form-item label="Multiple Locations or 1">
@@ -229,13 +262,12 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        1: 'success',
+        0: 'info',
+        2: 'danger'
       }
       return statusMap[status]
     }
-
   },
   data() {
     return {
@@ -255,6 +287,7 @@ export default {
         file:undefined,
         due_contract:undefined,
         pay_money:undefined,
+        title:undefined,
         desc:undefined,
         deal_id:undefined,
         city:undefined,
@@ -277,7 +310,7 @@ export default {
         pay_money: undefined,
         status: undefined
       },
-      statusOptions: [{label:'pending',value: 0},{label:'passed',value:1},{label:'refuse',value:2}],
+      statusOptions: [{label:'passed',value:1},{label:'refuse',value:2}],
       temp: {
         deal_id: undefined,
         reason: '',

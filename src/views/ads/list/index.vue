@@ -53,6 +53,7 @@
           <span class="link-type" v-if="row.cate==6">Deal</span>
           <span class="link-type" v-if="row.cate==7">Discount</span>
           <span class="link-type" v-if="row.cate==8">Contact</span>
+          <span class="link-type" v-if="row.cate==9">Me</span>
         </template>
       </el-table-column>
       <el-table-column label="Link" width="110px" align="center">
@@ -226,7 +227,7 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Educator',value: 3},{label:'Business',value: 4},{label:'Vendor',value: 5},{label:'Deals',value:6},{label:'Discount',value: 7},{label:'Contact',value: 8}],
+      categoryList:[{label:'Index',value:1},{label:'Jobs',value:2},{label:'Educator',value: 3},{label:'Business',value: 4},{label:'Vendor',value: 5},{label:'Deals',value:6},{label:'Discount',value: 7},{label:'Contact',value: 8},{label:'Me',value:9}],
       positionList:[{label:'Top',value:1},{label:'Mid',value: 2},{label:'Bottom',value: 3}],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],

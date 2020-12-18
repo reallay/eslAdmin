@@ -95,19 +95,19 @@
                 <div><span>Curriculum:</span>{{props.row.business.curriculum}}</div>
                 <div><span>Fields Trips:</span>
                   <span v-if="props.row.business.felds_trips==1">Yes</span>
-                  <span v-if="props.row.business.felds_trips==0">No</span>
+                  <span v-if="props.row.business.felds_trips==0">Unknown</span>
                 </div>
                 <div><span>is_currently_hiring:</span>
                   <span v-if="props.row.business.is_currently_hiring==1">Yes</span>
-                  <span v-if="props.row.business.is_currently_hiring==0">No</span>
+                  <span v-if="props.row.business.is_currently_hiring==0">Unknown</span>
                 </div>
                 <div><span>Is Events: </span>
                   <span v-if="props.row.business.is_events==1">Yes</span>
-                  <span v-if="props.row.business.is_events==0">No</span>
+                  <span v-if="props.row.business.is_events==0">Unknown</span>
                 </div>
                 <div><span>Special Needs: </span>
                   <span v-if="props.row.business.is_special_needs==1">Yes</span>
-                  <span v-if="props.row.business.is_special_needs==0">No</span>
+                  <span v-if="props.row.business.is_special_needs==0">Unknown</span>
                 </div>
                 <div><span>Job Title: </span>{{props.row.business.job_title}}</div>
                 <div><span>Staff student ratio:</span>{{props.row.business.staff_student_ratio}}</div>
@@ -158,11 +158,11 @@
 
                 <div><span>Is Dog Friendly:</span>
                   <span v-if="props.row.vendor.is_dog_friendly==1">Yes</span>
-                  <span v-if="props.row.vendor.is_dog_friendly==0">No</span>
+                  <span v-if="props.row.vendor.is_dog_friendly==0">Unknown</span>
                 </div>
                 <div><span>Is Events:</span>
                   <span v-if="props.row.vendor.is_events==1">Yes</span>
-                  <span v-if="props.row.vendor.is_events==0">No</span>
+                  <span v-if="props.row.vendor.is_events==0">Unknown</span>
                 </div>
                 <div><span>Job Title:</span>{{props.row.vendor.job_title}}</div>
                 <div><span>Legal Company Name:</span>{{props.row.vendor.legal_company_name}}</div>
@@ -202,7 +202,7 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column label="User Id" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
@@ -219,7 +219,7 @@
       </el-table-column>
       <el-table-column label="Is Seeking" width="110" align="center">
         <template slot-scope="scope">
-          <span v-if="scope.row.is_seeking===0">No</span>
+          <span v-if="scope.row.is_seeking===0">Unknown</span>
           <span v-if="scope.row.is_seeking===1">Yes</span>
         </template>
       </el-table-column>
@@ -500,23 +500,6 @@
           Confirm
         </el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogUserDetailVisible" title="User Detail">
-      <el-table :data="userDetailData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="id" label="Id" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
     </el-dialog>
 
   </div>

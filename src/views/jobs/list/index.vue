@@ -21,7 +21,11 @@
                   </el-form-item>
 
                   <el-form-item label="Desc" style="word-break: break-all;">
-                    <span>{{ props.row.desc }}</span>
+<!--                    <span>{{ props.row.desc }}</span>-->
+                    <pre>
+                       {{ props.row.desc }}
+                    </pre>
+
                   </el-form-item>
                   <el-form-item label="Education">
                     <span>{{ props.row.education }}</span>
@@ -45,43 +49,43 @@
                   </el-form-item>
                   <el-form-item label="Is Cpr">
                     <span v-if="props.row.is_cpr == 1">Yes</span>
-                    <span v-if="props.row.is_cpr == 0">No</span>
+                    <span v-if="props.row.is_cpr == 0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Equal">
                     <span v-if="props.row.is_equal==1">Yes</span>
-                    <span v-if="props.row.is_equal==0">No</span>
+                    <span v-if="props.row.is_equal==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is First Aide">
                     <span v-if="props.row.is_first_aide==1">Yes</span>
-                    <span v-if="props.row.is_first_aide==0">No</span>
+                    <span v-if="props.row.is_first_aide==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Interview">
                     <span v-if="props.row.is_interview==1">Yes</span>
-                    <span v-if="props.row.is_interview==0">No</span>
+                    <span v-if="props.row.is_interview==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Native">
                     <span v-if="props.row.is_native==1">Yes</span>
-                    <span v-if="props.row.is_native==0">No</span>
+                    <span v-if="props.row.is_native==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Online">
                     <span v-if="props.row.is_online==1">Yes</span>
-                    <span v-if="props.row.is_online==0">No</span>
+                    <span v-if="props.row.is_online==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Open">
                     <span v-if="props.row.is_open==1">Yes</span>
-                    <span v-if="props.row.is_open==0">No</span>
+                    <span v-if="props.row.is_open==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Paid">
                     <span v-if="props.row.is_paid==1">Yes</span>
-                    <span v-if="props.row.is_paid==0">No</span>
+                    <span v-if="props.row.is_paid==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Teaching Exp">
                     <span v-if="props.row.is_teaching_exp==1">Yes</span>
-                    <span v-if="props.row.is_teaching_exp==0">No</span>
+                    <span v-if="props.row.is_teaching_exp==0">Unknown</span>
                   </el-form-item>
                   <el-form-item label="Is Teaching License">
                     <span v-if="props.row.is_teaching_license==1">Yes</span>
-                    <span v-if="props.row.is_teaching_license==0">No</span>
+                    <span v-if="props.row.is_teaching_license==0">Unknown</span>
                   </el-form-item>
 
                   <el-form-item label="Language">
@@ -112,10 +116,15 @@
             <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80"
                              :class-name="getSortClass('id')">
               <template slot-scope="{row}">
-                <span>{{ row.id }}</span>
+                <span @click="turnDetail(row.id)">{{ row.id }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="Job Title" width="150px" align="center">
+            <el-table-column label="User Id" prop="user_id" >
+              <template slot-scope="{row}">
+                <span>{{ row.user_id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Job Title" width="150px" align="center" >
               <template slot-scope="{row}">
                 <span>{{ row.job_title }}</span>
               </template>
@@ -285,7 +294,7 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: [{ label: 'pending', value: 0 }, { label: 'passed', value: 1 }, { label: 'refuse', value: 2 }],
+      statusOptions: [ { label: 'passed', value: 1 }, { label: 'refuse', value: 2 }],
       showReviewer: false,
       temp: {
         job_id: undefined,
@@ -306,8 +315,8 @@ export default {
       },
       downloadLoading: false,
       dialogAdsFormVisible:false,
-      adsTypeOptions:[{label:'Homepage',value:1},{label:'Jobs',value: 2}],
-      adsTypeOptions2:[{label:'All',value: 0},{label:'Homepage',value:1},{label:'Jobs',value: 2}],
+      adsTypeOptions:[{label:'Homepage',value:1},{label:'Jobs',value: 2},{label: 'Both',value: 3}],
+      adsTypeOptions2:[{label:'All',value: 0},{label:'Homepage',value:1},{label:'Jobs',value: 2},{label: 'Both',value: 3}],
       adsTemp:{
         job_id:undefined,
         sort:undefined,
@@ -318,8 +327,13 @@ export default {
   },
   created() {
     this.getList()
+    console.log(process.env)
   },
   methods: {
+    turnDetail(id){
+      console.log(id)
+      this.$router.push({name:'jobDetail',query:{id:id}})
+    },
     tabClickJobs(e){
       console.log(e)
       if(e.index == 0){
@@ -332,6 +346,10 @@ export default {
       }
       if(e.index == 2){
         this.listQuery.ad_type = 2
+        this.getList()
+      }
+      if(e.index == 3){
+        this.listQuery.ad_type = 3
         this.getList()
       }
 

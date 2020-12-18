@@ -60,6 +60,11 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="User Id" prop="user_id" >
+        <template slot-scope="{row}">
+          <span>{{ row.user_id }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="Nickname" width="110">
         <template slot-scope="scope">
           {{ scope.row.nickname }}

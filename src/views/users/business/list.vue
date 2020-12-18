@@ -68,22 +68,22 @@
             </el-form-item>
             <el-form-item label="Fields Trips" >
               <span v-if="props.row.felds_trips == 1">Yes</span>
-              <span v-if="props.row.felds_trips == 0">Not</span>
+              <span v-if="props.row.felds_trips == 0">Unknown</span>
             </el-form-item>
             <el-form-item label="Hobbies" v-if="props.row.hobbies != '' ">
               <span>{{ props.row.hobbies }}</span>
             </el-form-item>
             <el-form-item label="Currently Hiring">
               <span v-if="props.row.is_currently_hiring==1">Yes</span>
-              <span v-if="props.row.is_currently_hiring==0">Not</span>
+              <span v-if="props.row.is_currently_hiring==0">Unknown</span>
             </el-form-item>
             <el-form-item label="Is Events">
               <span v-if="props.row.is_events==1">Yes</span>
-              <span v-if="props.row.is_events==0">Not</span>
+              <span v-if="props.row.is_events==0">Unknown</span>
             </el-form-item>
             <el-form-item label="Special Needs">
               <span v-if="props.row.is_special_needs==1">Yes</span>
-              <span v-if="props.row.is_special_needs==0">Not</span>
+              <span v-if="props.row.is_special_needs==0">Unknown</span>
             </el-form-item>
             <el-form-item label="Nationality">
               <span>{{ props.row.nationality }}</span>
@@ -117,6 +117,11 @@
       <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="User Id" prop="user_id" >
+        <template slot-scope="{row}">
+          <span>{{ row.user_id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Nickname" width="110">

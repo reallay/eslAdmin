@@ -136,6 +136,11 @@ export const constantRoutes = [
         name: 'jobsList',
         component: () => import('@/views/jobs/list/index'),
         meta: { title: 'List', icon: 'table' }
+      },
+      {
+        path:'list/detail',
+        name:'jobDetail',
+        component:()=>import('@/views/jobs/list/detail/index')
       }
 
     ]
